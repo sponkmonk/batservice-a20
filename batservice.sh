@@ -4,8 +4,8 @@ echo "BatService - conservação de bateria para o Galaxy A20"
 echo
 echo "AVISO: use este script por sua conta e risco! não me responsabilize se o seu aparelho entrar no modo de avião e sair voando até ir de encontro com a parede de livre e espontânea vontade."
 echo
-echo "Iniciando em 30, 29, 28..."
-sleep 30
+echo "Iniciando em 15, 14, 13..."
+sleep 15
 
 # Se este arquivo existir, o programa encerra
 if [ "$EXIT_FILE" = "" ]; then
@@ -17,6 +17,7 @@ if [ "$BWD" = "" ]; then
   BWD="/sys/class/power_supply/battery"
 fi
 Bpercent="${BWD}/capacity"
+Bvoltage="${BWD}/voltage_now"
 Bstatus="${BWD}/status"
 Bcurrent="${BWD}/current_now"
 
@@ -30,7 +31,7 @@ DISABLED=0
 # } A20
 
 
-DELAY_SWITCH=3
+DELAY_SWITCH=15
 
 E_WROPTION=10
 E_FASWITCH=11
@@ -81,6 +82,7 @@ function log_battery {
   echo " -*- BATTERY STATUS -*- "
   echo "$percent % ($status)"
   echo "$current mA"
+  echo "$voltage mV"
 
   hstatus="ENABLED"
   if [ $switch_status -ne $ENABLED ]; then
@@ -99,6 +101,7 @@ DELAY_REFRESH=60
 while [ ! -r "$EXIT_FILE" ]; do
   percent=$(cat "$Bpercent")
   current=$(cat "$Bcurrent")
+  (( voltage=$(cat "$Bvoltage")/1000 ))
   status=$(cat "$Bstatus")
 
   charge_switch get
