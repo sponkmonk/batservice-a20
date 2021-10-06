@@ -5,6 +5,7 @@ echo
 echo "AVISO: use este script por sua conta e risco! não me responsabilize se o seu aparelho entrar no modo de avião e sair voando até ir de encontro com a parede de livre e espontânea vontade."
 echo
 echo "Iniciando em 15, 14, 13..."
+echo
 sleep 15
 
 # Se este arquivo existir, o programa encerra
@@ -40,7 +41,7 @@ E_WRSWITCH=12
 RATIONALE_MAMIN=-5
 RATIONALE_MAMAX=5
 
-function charge_switch {
+charge_switch () {
   switch_status=$(cat "$Bswitch")
 
   if [ "$1" = "get" ]; then
@@ -78,17 +79,17 @@ function charge_switch {
 }
 
 
-function log_battery {
-  echo " -*- BATTERY STATUS -*- "
-  echo "$percent % ($status)"
+log_battery () {
+  echo " -*- STATUS DA BATERIA -*- "
+  echo "$percent %"
   echo "$current mA"
   echo "$voltage mV"
 
-  hstatus="ENABLED"
+  hstatus="SIM"
   if [ $switch_status -ne $ENABLED ]; then
-    hstatus="DISABLED"
+    hstatus="NÃO"
   fi
-  echo "Charge switch: $hstatus"
+  echo "Carregando: $hstatus"
   echo
 }
 
@@ -101,7 +102,7 @@ DELAY_REFRESH=60
 while [ ! -r "$EXIT_FILE" ]; do
   percent=$(cat "$Bpercent")
   current=$(cat "$Bcurrent")
-  (( voltage=$(cat "$Bvoltage")/1000 ))
+  voltage=$(expr $(cat "$Bvoltage") / 1000)
   status=$(cat "$Bstatus")
 
   charge_switch get
@@ -112,7 +113,7 @@ while [ ! -r "$EXIT_FILE" ]; do
   if [ $switch_status -eq $DISABLED ]; then
 
     if [ $percent -lt $MIN_PERCENT ]; then
-      echo "ENABLE charging"
+      echo "ATIVAR carregamento"
       echo
       charge_switch enable
       continue
@@ -121,7 +122,7 @@ while [ ! -r "$EXIT_FILE" ]; do
   else
 
     if ( [ $percent -ge $MAX_PERCENT ] && [ "$status" = "Charging" ] ); then
-      echo "DISABLE charging"
+      echo "DESATIVAR carregamento"
       echo
       charge_switch disable
       continue
