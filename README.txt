@@ -14,29 +14,31 @@ Testei apenas no modelo referido. Se o kernel do seu Android não possuir o arqu
 
 1. COMO UTILIZAR
 
-No aplicativo Termux, copie o arquivo para o diretório 'inicial' do aplicativo. Por exemplo, se o script estiver em "/sdcard/Documents", mova ele para o Termux com o seguinte comando:
+No aplicativo de terminal, copie o arquivo para o diretório 'inicial' do aplicativo ("/data/data/URI_DO_TERMINAL/files/").
+
+Por exemplo, se o script estiver em "/sdcard/Documents", você pode mover ele para o aplicativo Termux com o seguinte comando:
   $ mv /sdcard/Documents/batservice.sh ~/
 
 Dê permissões de execução:
   $ cd ~/ # garante que você está na home do Termux
   $ chmod +x batservice.sh
 
-Reinicie o Termux em uma sessão 'failsafe', já que o serviço deve ser executado fora do espaço de aplicativo, e adquira privilégios root:
+Se estiver usando o Termux, reinicie em uma sessão 'failsafe', já que o serviço será executado fora do ambiente seguro do aplicativo, e adquira privilégios root:
   $ su
 
-OBS.: é possível abrir uma sessão failsafe também pelo menu lateral do Termux, segurando o botão "NEW SESSION".
+OBS.: é possível abrir uma sessão failsafe também pelo menu lateral do aplicativo, segurando o botão "NEW SESSION".
 
 Então basta executar o script:
   # ./batservice.sh
 
-Com a bateria acima de 50 %, pode levar 1 minuto para o script desativar o carregamento da bateria. Você pode checar isso através de qualquer aplicativo capaz de exibir a corrente da bateria (desconsidere a mensagem de status "carregando"). Caso ainda esteja carregando, encerre e desinstale o programa com as instruções nas seções abaixo.
+Com a bateria acima de 50 %, pode levar 1 minuto para o script desativar o carregamento da bateria. Você pode checar isso pela corrente em mA, que pode variar em até |10| mA. Caso ainda esteja carregando, encerre e desinstale o programa com as instruções nas seções abaixo.
 
 
 2. COMO ENCERRAR O SCRIPT
 
 Existem várias formas de encerrar este programa.
 
-Para leigos (isto é: pessoas que não entendem nada do código do script), o ideal é criar um arquivo nomeado "bat.exit" no diretório padrão "/sdcard" (MESMO QUE O TERMUX TENHA SIDO ASS@SSINADO PELO GERENCIADOR DE MEMÓRIA!). Até 1 minuto, o programa identifica o arquivo, remove e encerra. Este método chato é recomendado pois o script recupera a configuração anterior a ele.
+Para leigos (isto é: pessoas que não entendem nada do código do script), o ideal é criar um arquivo nomeado "batservice.exit" no diretório padrão "/sdcard" (MESMO QUE O APP DE TERMINAL TENHA SIDO ASS@SSINADO PELO GERENCIADOR DE MEMÓRIA!). Até 1 minuto, o programa identifica o arquivo, remove e encerra. Este método chato é recomendado pois o script recupera a configuração anterior a ele.
 
 Para usuários avançados, que sabem o que estão fazendo, basta encerrar o programa com CTRL+C, ou usar o comando kill. Você pode redefinir o valor padrão no arquivo de controle de carga (1).
 
@@ -53,6 +55,23 @@ Finalmente, remova o script com o comando 'rm':
 E saia do terminal:
   # exit
   $ exit
+
+
+4. ALTERANDO PERCENTUAIS
+Os valores padrões são ideais para a conservação da vida útil da bateria, segundo artigos disponíveis em <https://batteryuniversity.com>.
+
+Mas você pode definir quaisquer limites entre 15 e 100% passando esses valores como argumentos para o programa:
+  # ./batservice.sh [MÍNIMO] [MÁXIMO]
+
+
+5. TESTANDO/ALTERANDO CÓDIGO
+Você criar uma cópia dos arquivos presentes no endereço "/sys/class/power_supply/battery" em "qualquer/endereço". Para isso, defina a variável de ambiente BWD com esse endereço:
+  $ export BWD="qualquer/endereço"
+
+Se estiver no Linux, exporte também o endereço para o arquivo de código de erros/encerramento:
+  $ export EXIT_FILE="qualquer/erro"
+
+Desta forma, é possível executar o script em modo de usuário sem causar alterações em arquivos de sistema.
 
 
 PROBLEMAS?

@@ -6,11 +6,11 @@ echo "AVISO: use este script por sua conta e risco! não me responsabilize se o 
 echo
 echo "Iniciando em 15, 14, 13..."
 echo
-sleep 15
+sleep 1
 
 # Se este arquivo existir, o programa encerra
 if [ "$EXIT_FILE" = "" ]; then
-  EXIT_FILE="/sdcard/bat.exit"
+  EXIT_FILE="/sdcard/batservice.exit"
 fi
 # Se o programa encerrar de forma inesperada, este arquivo pode conter um dos códigos de erros das variáveis E_*.
 
@@ -37,6 +37,9 @@ DELAY_SWITCH=15
 E_WROPTION=10
 E_FASWITCH=11
 E_WRSWITCH=12
+E_NILPARAM=20
+E_INVPARAM=21
+E_OUTPARAM=22
 
 RATIONALE_MAMIN=-5
 RATIONALE_MAMAX=5
@@ -94,8 +97,62 @@ log_battery () {
 }
 
 
+valid_numbers () {
+  if ( [ "$1" = "" ] || [ "$2" = "" ] ); then
+    echo "Você está brincando, né? :|"
+    echo "Os parâmetros foram ignorados"
+    return $E_NILPARAM
+  fi
+
+  pi=0
+  for p in "$@"; do
+    pi=$(expr $pi + 1)
+
+    case $p in
+      *[!0-9]*)
+        echo "Erro: parâmetro $pi inválido: $p"
+        return $E_INVPARAM
+        ;;
+      *)
+        ;;
+    esac
+  done
+
+  return 0
+}
+
+
 MIN_PERCENT=45
 MAX_PERCENT=50
+
+if [ "$2" != "" ]; then
+  valid_numbers "$1" "$2"
+  valid_res=$?
+  if [ $valid_res -eq $E_NILPARAM ]; then
+    echo "Parâmetros nulos ignorados"
+    valid_res=0
+
+  elif [ $valid_res -eq $E_INVPARAM ]; then
+    echo "Os parâmetros devem ser passados conforme o exemplo:"
+    echo "$0 $MIN_PERCENT $MAX_PERCENT"
+
+  elif ( [ $1 -ge 15 ] && [ $1 -lt $2 ]\
+        && [ $2 -le 100 ] ); then
+    MIN_PERCENT=$1
+    MAX_PERCENT=$2
+
+  else
+    echo "Erro: percentuais fora dos limites!"
+    echo "Mínimo >= 15 (mínimo = $1)"
+    echo "Máximo <= 100 (máximo = $2)"
+    valid_res=$E_OUTPARAM
+  fi
+  
+  if [ $valid_res -ne 0 ]; then
+    echo $valid_res > "$EXIT_FILE"
+    exit $valid_res
+  fi
+fi
 
 DELAY_REFRESH=60
 
