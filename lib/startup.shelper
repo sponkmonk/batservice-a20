@@ -1,0 +1,48 @@
+# startup.shelper - inicializador do serviço
+
+if [ $(id -u) -ne 0 ]; then
+  echo "Privilégios root são necessários!" >&2
+  echo 1 > "$EXIT_FILE"
+  exit 1
+fi
+
+# FAZ REGISTROS NO DIRETÓRIO APROPRIADO
+TERMUX_PREFIX="/data/data/com.termux/files/usr"
+if [ "$TERMUX_PREFIX" = "$PREFIX" ]; then
+
+  TERMUX_HOME_CACHE="/data/data/com.termux/files/home/.cache"
+  SERVICE_CACHE="$TERMUX_HOME_CACHE/$Name"
+
+  already=0
+  for p in "$@"; do
+    if [ "$p" = "--service-already" ]; then
+      already=1
+      break
+    fi
+  done
+
+  if [ $already -eq 0 ]; then
+    # Necessário para evitar que arquivos root prejudiquem a remoção do aplicativo
+    ug=($(stat -c "%U %G" $PREFIX))
+    mkdir -p $SERVICE_CACHE
+    # caso o diretório .cache seja criado agora
+    chown ${ug[0]}:${ug[1]} $TERMUX_HOME_CACHE
+
+    echo "\n" \
+ "====== REGISTRO" "$NAME"  "======\n" \
+ ""            "$(date)"          "\n" \
+ "=================================\n" \
+ >> $SERVICE_CACHE/out.log
+    # Recursivamente garantir a posse do aplicativo sobre os arquivos em seu território
+    chown -R ${ug[0]}:${ug[1]} $SERVICE_CACHE
+
+    # Executa e encerra
+    sh "$0" $@ --service-already >> $SERVICE_CACHE/out.log 2>&1
+    exit $?
+  fi
+
+else
+  already=2
+fi
+
+unset TERMUX_PREFIX

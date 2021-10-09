@@ -1,26 +1,49 @@
-#!/system/bin/sh
+#!/data/data/com.termux/files/usr/bin/su
 
-echo "BatService - conservação de bateria para o Galaxy A20"
-echo
-echo "AVISO: use este script por sua conta e risco! não me responsabilize se o seu aparelho entrar no modo de avião e sair voando até ir de encontro com a parede de livre e espontânea vontade."
-echo
-echo "Iniciando em 15, 14, 13..."
-echo
-sleep 1
+NAME="BATSERVICE"
+Name="BatService"
+
+if [ "$SERVICE_LIB" = "" ]; then
+  SERVICE_LIB="/data/data/com.termux/files/usr/lib/batservice"
+fi
 
 # Se este arquivo existir, o programa encerra
 if [ "$EXIT_FILE" = "" ]; then
-  EXIT_FILE="/sdcard/batservice.exit"
+  EXIT_FILE="/sdcard/$name.exit"
 fi
 # Se o programa encerrar de forma inesperada, este arquivo pode conter um dos códigos de erros das variáveis E_*.
 
 if [ "$BWD" = "" ]; then
   BWD="/sys/class/power_supply/battery"
 fi
+
+if ( [ "$NO_SERVICE" = "" ] && [ -r $SERVICE_LIB/startup.shelper ] ); then
+
+  . $SERVICE_LIB/startup.shelper
+  unset SERVICE_LIB
+
+  if [ $already -eq 0 ]; then
+    exit 2
+  fi
+
+  unset already
+
+fi
+
+
+echo "$Name - conservação de bateria para o Galaxy A20"
+echo
+echo "AVISO: use este programa por sua conta e risco! não me responsabilize se o seu aparelho entrar no modo de avião e sair voando até ir de encontro com a parede de livre e espontânea vontade."
+echo
+echo "Iniciando em 15, 14, 13..."
+echo
+sleep 15
+
 Bpercent="${BWD}/capacity"
 Bvoltage="${BWD}/voltage_now"
 Bstatus="${BWD}/status"
 Bcurrent="${BWD}/current_now"
+Btemp="${BWD}/temp"
 
 # Controlador de carga do Galaxy A20 {
 Bswitch="${BWD}/hmt_ta_charge"
@@ -87,12 +110,13 @@ log_battery () {
   echo "$percent %"
   echo "$current mA"
   echo "$voltage mV"
+  echo "$temp °C"
 
-  hstatus="SIM"
+  hstatus="ATIVADO"
   if [ $switch_status -ne $ENABLED ]; then
-    hstatus="NÃO"
+    hstatus="DESATIVADO"
   fi
-  echo "Carregando: $hstatus"
+  echo "Interruptor de carga: $hstatus"
   echo
 }
 
@@ -147,7 +171,7 @@ if [ "$2" != "" ]; then
     echo "Máximo <= 100 (máximo = $2)"
     valid_res=$E_OUTPARAM
   fi
-  
+
   if [ $valid_res -ne 0 ]; then
     echo $valid_res > "$EXIT_FILE"
     exit $valid_res
@@ -161,6 +185,7 @@ while [ ! -r "$EXIT_FILE" ]; do
   current=$(cat "$Bcurrent")
   voltage=$(expr $(cat "$Bvoltage") / 1000)
   status=$(cat "$Bstatus")
+  temp=$(expr $(cat "$Btemp") / 10)
 
   charge_switch get
   switch_status=$?
