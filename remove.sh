@@ -37,6 +37,8 @@ rm $PREFIX/bin/batservice.sh
 rm $PREFIX/lib/batservice/startup-helper.sh
 rmdir $PREFIX/lib/batservice
 rm $HOME/.termux/boot/batservice-boot.sh
+rm $PREFIX/share/batservice/COPYING
+rmdir $PREFIX/share/batservice
 
 echo "Terminado!"
 echo "by cleds.upper"
