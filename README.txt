@@ -7,7 +7,8 @@ Isto funciona com praticamente todo carregador capaz de entregar a potência nec
 
 0. ANULAÇÃO DE GARANTIAS
 
-Use este script por sua própria conta e risco! não me responsabilize se o seu aparelho entrar no modo de avião e sair voando até ir de encontro com a parede de livre e espontânea vontade.
+Este programa vem com ABSOLUTAMENTE NENHUMA GARANTIA.
+Este é um software livre, e você pode redistribuí-lo sob certas condições; leia o arquivo COPYING para detalhes.
 
 Testei apenas no modelo referido. Se o kernel do seu Android não possuir o arquivo de controle de carga específico (1: veja a variável "Bswitch" no código fonte deste programa), ou o seu dispositivo não está rooteado, o BatService não funcionará.
 

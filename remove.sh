@@ -1,0 +1,42 @@
+#!/data/data/com.termux/files/usr/bin/sh
+
+#    This file is part of BatService.
+#
+#    BatService is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    BatService is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with BatService.  If not, see <https://www.gnu.org/licenses/>.
+
+if [ $(id -u) -eq 0 ]; then
+  echo "O BatService é instalado normalmente sem root, e deve ser removido também desta forma"
+  exit 1
+fi
+
+
+EXIT_FILE="/sdcard/batservice.exit"
+echo "Encerrando BatService. Isto não deve demorar mais que 1 minuto"
+echo "Talvez root seja necessário"
+touch $EXIT_FILE
+if [ $? -ne 0 ]; then
+  su -c "touch $EXIT_FILE"
+fi
+while [ -r $EXIT_FILE ]; do
+  sleep 1
+done
+
+echo "Removendo BatService incondicionalmente..."
+rm $PREFIX/bin/batservice.sh
+rm $PREFIX/lib/batservice/startup-helper.sh
+rmdir $PREFIX/lib/batservice
+rm $HOME/.termux/boot/batservice-boot.sh
+
+echo "Terminado!"
+echo "by cleds.upper"
