@@ -13,66 +13,65 @@ Este é um software livre, e você pode redistribuí-lo sob certas condições; 
 Testei apenas no modelo referido. Se o kernel do seu Android não possuir o arquivo de controle de carga específico (1: veja a variável "Bswitch" no código fonte deste programa), ou o seu dispositivo não está rooteado, o BatService não funcionará.
 
 
-1. COMO UTILIZAR
+1. INSTALANDO
 
-No aplicativo de terminal, copie o arquivo para o diretório 'inicial' do aplicativo ("/data/data/URI_DO_TERMINAL/files/").
+No aplicativo de terminal, copie os arquivos para o diretório 'inicial' do aplicativo ("/data/data/URI_DO_TERMINAL/files/").
 
-Por exemplo, se o script estiver em "/sdcard/Documents", você pode mover ele para o aplicativo Termux com o seguinte comando:
-  $ mv /sdcard/Documents/batservice.sh ~/
+Por exemplo, se os arquivos estiverem em "/sdcard/Documents/batservice", você pode copiar para o Termux com o seguinte comando:
+  $ cp -r /sdcard/Documents/batservice ~/batservice
 
 Dê permissões de execução:
-  $ cd ~/ # garante que você está na home do Termux
-  $ chmod +x batservice.sh
+  $ cd ~/batservice
+  $ chmod +x install.sh && chmod +x remove.sh
 
-Se estiver usando o Termux, reinicie em uma sessão 'failsafe', já que o serviço será executado fora do ambiente seguro do aplicativo, e adquira privilégios root:
-  $ su
+E então instale:
+  $ ./install.sh
 
-OBS.: é possível abrir uma sessão failsafe também pelo menu lateral do aplicativo, segurando o botão "NEW SESSION".
+Uma solicitação de root pode aparecer. Neste caso, faça o gerenciador de super usuário memorizar a permissão ou seja incomodado por ele toda vez que o Android iniciar -- e caso o serviço não funcione, não é problema com o BatService, pois o gerenciador pode negar as solicitações de forma silenciosa durante a inicialização do sistema.
 
-Então basta executar o script:
-  # ./batservice.sh
+Instale também a extensão Termux:Boot, se ainda não fez isso. Desative a otimização de bateria para ambos os apps (Termux e Termux:Boot) e execute o Termux:Boot para o sistema Android inicializar o BatService. [Use os apps disponíveis via F-Droid!]
 
-Com a bateria acima de 50 %, pode levar 1 minuto para o script desativar o carregamento da bateria. Você pode checar isso pela corrente em mA, que pode variar em até |10| mA. Caso ainda esteja carregando, encerre e desinstale o programa com as instruções nas seções abaixo.
+Com a bateria acima de 50 %, pode atrasar 1 minuto para o script desativar o carregamento da bateria. Você pode checar isso pela corrente em mA, que pode variar em até |10| mA. Caso ainda esteja carregando, encerre e desinstale o programa com as instruções nas seções abaixo.
 
 
 2. COMO ENCERRAR O SCRIPT
 
-Existem várias formas de encerrar este programa.
-
-Para leigos (isto é: pessoas que não entendem nada do código do script), o ideal é criar um arquivo nomeado "batservice.exit" no diretório padrão "/sdcard" (MESMO QUE O APP DE TERMINAL TENHA SIDO ASS@SSINADO PELO GERENCIADOR DE MEMÓRIA!). Até 1 minuto, o programa identifica o arquivo, remove e encerra. Este método chato é recomendado pois o script recupera a configuração anterior a ele.
-
-Para usuários avançados, que sabem o que estão fazendo, basta encerrar o programa com CTRL+C, ou usar o comando kill. Você pode redefinir o valor padrão no arquivo de controle de carga (1).
-
-NOTA: normalmente, reconectar o cabo já é o suficiente para recuperar a configuração padrão.
+O ideal é criar um arquivo nomeado "batservice.exit" no diretório padrão "/sdcard". Até 1 minuto, o programa identifica o arquivo, remove e encerra. Este método chato é recomendado pois o script recupera automaticamente a configuração anterior a ele, o que significa que seu smartphone vai carregar acima de 50% novamente.
 
 
 3. PARA DESINSTALAR
 
-Primeiramente, encerre o script seguindo a seção anterior.
+De volta aos arquivos de instalação (você só precisa manter remove.sh após a instalação!)
+  $ ./remove.sh
 
-Finalmente, remova o script com o comando 'rm':
-  # rm batservice.sh
+Root pode ser necessário.
 
-E saia do terminal:
-  # exit
-  $ exit
+Remova também o relatório do BatService, caso não vá usar futuramente:
+  $ rm -r ~/.cache/BatService
 
 
 4. ALTERANDO PERCENTUAIS
-Os valores padrões são ideais para a conservação da vida útil da bateria, segundo artigos disponíveis em <https://batteryuniversity.com>.
+
+Os valores padrões são ótimos para a conservação da vida útil da bateria, segundo os estudos disponíveis em <https://batteryuniversity.com>.
 
 Mas você pode definir quaisquer limites entre 15 e 100% passando esses valores como argumentos para o programa:
   # ./batservice.sh [MÍNIMO] [MÁXIMO]
 
+Entretanto, se estiver instalado o serviço conforme a seção (1), você deve adicionar os parâmetros no arquivo em ".termux/boot/batservice-boot.sh".
+
+Reinicie o sistema Android para os novos valores terem efeito.
+
 
 5. TESTANDO/ALTERANDO CÓDIGO
-Você criar uma cópia dos arquivos presentes no endereço "/sys/class/power_supply/battery" em "qualquer/endereço". Para isso, defina a variável de ambiente BWD com esse endereço:
+Você deve criar uma cópia dos arquivos presentes no endereço "/sys/class/power_supply/battery" em "qualquer/endereço". Para isso, defina a variável de ambiente BWD com esse endereço:
   $ export BWD="qualquer/endereço"
 
 Se estiver no Linux, exporte também o endereço para o arquivo de código de erros/encerramento:
   $ export EXIT_FILE="qualquer/erro"
 
-Desta forma, é possível executar o script em modo de usuário sem causar alterações em arquivos de sistema.
+Desta forma, é possível executar o script em modo de usuário sem causar alterações nos arquivos de sistema.
+
+NOTA: no código fonte disponível no GitHub, há um diretório 'test' com todos os arquivos prontos para uso.
 
 
 PROBLEMAS?

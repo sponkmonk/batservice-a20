@@ -19,7 +19,7 @@
 
 NAME="BATSERVICE"
 Name="BatService"
-VERSION="1.0.211009"
+VERSION="1.0.211010"
 
 if [ "$SERVICE_LIB" = "" ]; then
   SERVICE_LIB="$PREFIX/lib/batservice"

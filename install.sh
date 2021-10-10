@@ -49,5 +49,7 @@ chmod +x $PREFIX/lib/batservice/startup-helper.sh
 install_file tools/batservice-boot.sh $HOME/.termux/boot/
 chmod +x $HOME/.termux/boot/batservice-boot.sh
 
+install_file COPYING $PREFIX/share/batservice/
+
 echo "Instalação concluída!"
 echo "by cleds.upper"
