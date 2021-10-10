@@ -245,6 +245,8 @@ if [ -r "$EXIT_FILE" ]; then
   rm "$EXIT_FILE"
 fi
 
+prev_percent=0
+
 while [ ! -r "$EXIT_FILE" ]; do
 
   percent=$(cat "$Bpercent")
@@ -256,7 +258,9 @@ while [ ! -r "$EXIT_FILE" ]; do
   charge_switch get
   switch_status=$?
 
-  log_battery
+  if [ $prev_percent -ne $percent ]; then
+    log_battery
+  fi
 
   if [ $switch_status -eq $DISABLED ]; then
 
@@ -278,6 +282,7 @@ while [ ! -r "$EXIT_FILE" ]; do
 
   fi
 
+  prev_percent=$percent
   sleep $DELAY_REFRESH
 
 done
