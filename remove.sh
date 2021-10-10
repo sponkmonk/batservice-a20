@@ -23,14 +23,17 @@ fi
 
 EXIT_FILE="/sdcard/batservice.exit"
 echo "Encerrando BatService. Isto não deve demorar mais que 1 minuto"
-echo "Talvez root seja necessário"
-touch $EXIT_FILE
-if [ $? -ne 0 ]; then
-  su -c "touch $EXIT_FILE"
-fi
-while [ -r $EXIT_FILE ]; do
-  sleep 1
-done
+echo "Root é necessário para criar/remover o arquivo de erros da memória interna, mas você pode rejeitar a solicitação se já encerrou o BatService."
+su -c "touch $EXIT_FILE &&
+  tm=60
+  while [ -r $EXIT_FILE ]; do
+    tm=\$(expr \$tm - 1)
+    if [ \$tm -eq 0 ]; then
+      rm $EXIT_FILE
+      break
+    fi
+    sleep 1
+  done"
 
 echo "Removendo BatService incondicionalmente..."
 rm $PREFIX/bin/batservice.sh
