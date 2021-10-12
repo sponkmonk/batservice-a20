@@ -19,7 +19,7 @@
 
 NAME="BATSERVICE"
 Name="BatService"
-VERSION="1.0.211010"
+VERSION="1.0.211011"
 
 if [ "$SERVICE_LIB" = "" ]; then
   SERVICE_LIB="$PREFIX/lib/batservice"
@@ -72,16 +72,8 @@ E_UNKERROR=2
 E_NOSWITCH=3
 
 if ( [ "$NO_SERVICE" = "" ] && [ -r "$SERVICE_LIB/startup-helper.sh" ] ); then
-
   . "$SERVICE_LIB/startup-helper.sh"
   unset SERVICE_LIB
-
-  if [ $already -eq 0 ]; then
-    error $E_UNKERROR
-  fi
-
-  unset already
-
 fi
 
 
@@ -129,15 +121,20 @@ RATIONALE_MAMAX=5
 charge_switch () {
   switch_status=$(cat "$Bswitch")
 
-  if [ "$1" = "get" ]; then
-    return $switch_status
-  elif [ "$1" = "enable" ]; then
-    mode=$ENABLED
-  elif [ "$1" = "disable" ]; then
-    mode=$DISABLED
-  else
-    exit $E_WROPTION
-  fi
+  case $1 in
+    get)
+      return $switch_status
+      ;;
+    enable)
+      mode=$ENABLED
+      ;;
+    disable)
+      mode=$DISABLED
+      ;;
+    *)
+      exit $E_WROPTION
+      ;;
+  esac
 
   if [ $switch_status -ne $mode ]; then
     echo $mode > "$Bswitch"

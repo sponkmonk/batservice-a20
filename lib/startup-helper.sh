@@ -34,43 +34,22 @@ if [ "$TERMUX_PREFIX" = "$PREFIX" ]; then
   TERMUX_HOME_CACHE="$TERMUX_HOME/.cache"
   SERVICE_CACHE="$TERMUX_HOME_CACHE/$Name"
 
-  already=0
-  for p in "$@"; do
-    if [ "$p" = "--service-already" ]; then
-      already=1
-      break
-    fi
-  done
+  # Necessário para evitar que arquivos root prejudiquem a remoção do aplicativo
+  user=$(stat -c %U $PREFIX)
+  group=$(stat -c %G $PREFIX)
+  mkdir -p "$SERVICE_CACHE"
+  # caso o diretório .cache seja criado agora
+  chown ${user}:${group} "$TERMUX_HOME_CACHE"
 
-  if [ $already -eq 0 ]; then
-    # Necessário para evitar que arquivos root prejudiquem a remoção do aplicativo
-    user=$(stat -c %U $PREFIX)
-    group=$(stat -c %G $PREFIX)
-    mkdir -p "$SERVICE_CACHE"
-    # caso o diretório .cache seja criado agora
-    chown ${user}:${group} "$TERMUX_HOME_CACHE"
-
-    echo "\n" \
-      "====== REGISTRO" "$NAME"  "======\n" \
-      ""            "$(date)"          "\n" \
-      "=================================\n" \
+  echo "\n" \
+    "====== REGISTRO" "$NAME"  "======\n" \
+    ""            "$(date)"          "\n" \
+    "=================================\n" \
  >> "$SERVICE_CACHE/out.log"
-    # Recursivamente garantir a posse do aplicativo sobre os arquivos em seu território
-    chown -R ${user}:${group} "$SERVICE_CACHE"
+  # Recursivamente garantir a posse do aplicativo sobre os arquivos em seu território
+  chown -R ${user}:${group} "$SERVICE_CACHE"
+  exec>> "$SERVICE_CACHE/out.log"
 
-  fi
-
-else
-  already=2
 fi
-
 
 unset TERMUX_PREFIX
-
-
-# Executa e encerra
-
-if [ $already -eq 0 ]; then
-  sh "$0" $@ --service-already >> "$SERVICE_CACHE/out.log" 2>&1
-  exit $?
-fi

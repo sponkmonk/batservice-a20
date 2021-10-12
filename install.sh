@@ -51,5 +51,6 @@ chmod +x $HOME/.termux/boot/batservice-boot.sh
 
 install_file COPYING $PREFIX/share/batservice/
 
-echo "Instalação concluída!"
+echo "Instalação concluída."
+echo "Reinicie o sistema Android se o BatService não entrar em execução."
 echo "by cleds.upper"
