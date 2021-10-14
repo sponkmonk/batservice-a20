@@ -28,15 +28,15 @@ if [ "$SERVICE_LIB" = "" ]; then
   SERVICE_LIB="$PREFIX/lib/$name"
 fi
 
+. "$SERVICE_LIB/perms.sh"
 if [ "$DATA" = "" ]; then
   DATA="$PREFIX/etc/$name"
   backup_owner "$PREFIX"
   mkdir -p "$DATA"
-  restore_owner "$PREFIX"
+  restore_owner "$PREFIX/etc"
   restore_owner "$DATA"
 fi
 
-. "$SERVICE_LIB/perms.sh"
 . "$SERVICE_LIB/error.sh"
 
 if [ "$NO_SERVICE" = "" ]; then
