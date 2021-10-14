@@ -40,8 +40,8 @@ DISABLED=0
 
 DELAY_SWITCH=15
 
-RATIONALE_MAMIN=-5
-RATIONALE_MAMAX=5
+RATIONALE_MAMIN=-10
+RATIONALE_MAMAX=10
 
 battery_switch_set () {
   switch_status=$(cat "$Bswitch")
@@ -96,7 +96,6 @@ battery_percent () {
 battery_status () {
   status=$(cat "$Bstatus")
 
-
   # corrige o status para "Not charging" quando a corrente varia abaixo de |10| mA
   battery_current
   if ( [ "$status" = "Charging" ] && [ $current -le $RATIONALE_MAMAX ] && [ $current -ge $RATIONALE_MAMIN ] ); then
@@ -114,7 +113,7 @@ battery_current () {
 
 
 battery_temp () {
-  temp=$(cat "Btemp")
+  temp=$(cat "$Btemp")
   temp=$(expr $temp / 10)
 }
 

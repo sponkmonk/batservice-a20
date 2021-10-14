@@ -49,6 +49,7 @@ fi
 
 echo "$Name - conservação de bateria para o Galaxy A20"
 echo "Versão $VERSION"
+echo
 
 if [ -r "$EXIT_FILE" ]; then
   rm "$EXIT_FILE"
@@ -79,6 +80,7 @@ while [ ! -r "$EXIT_FILE" ]; do
       battery_switch_set enable
       not_charging_set=$DISABLED
       echo
+      prev_percent=0
       continue
     fi
 
@@ -91,6 +93,7 @@ while [ ! -r "$EXIT_FILE" ]; do
       battery_switch_set disable
       not_charging_set=$ENABLED
       echo
+      prev_percent=0
       continue
     fi
 
