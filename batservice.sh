@@ -30,7 +30,10 @@ fi
 
 if [ "$DATA" = "" ]; then
   DATA="$PREFIX/etc/$name"
+  backup_owner "$PREFIX"
   mkdir -p "$DATA"
+  restore_owner "$PREFIX"
+  restore_owner "$DATA"
 fi
 
 . "$SERVICE_LIB/perms.sh"
