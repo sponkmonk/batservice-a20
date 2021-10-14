@@ -19,11 +19,9 @@ EXIT_FILE="$DATA/exit.err"
 
 error () {
   if [ $1 -ne 0 ]; then
-    backup_owner "$DATA"
     echo $1 > "$EXIT_FILE"
-    restore_owner "$EXIT_FILE"
   fi
-  exit $1
+  abort "Err: $1"
 }
 
 printerr () {

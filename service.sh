@@ -24,17 +24,15 @@ name="batservice"
 VERSION="1.1.211014"
 
 
-if [ "$SERVICE_LIB" = "" ]; then
-  SERVICE_LIB="$PREFIX/lib/$name"
+if [ "$MODDIR" = "" ]; then
+  MODDIR=${0%/*}
+  SERVICE_LIB="$MODDIR/lib"
 fi
 
 . "$SERVICE_LIB/perms.sh"
 if [ "$DATA" = "" ]; then
-  DATA="$PREFIX/etc/$name"
-  backup_owner "$PREFIX"
+  DATA="$MODDIR/data"
   mkdir -p "$DATA"
-  restore_owner "$PREFIX/etc"
-  restore_owner "$DATA"
 fi
 
 . "$SERVICE_LIB/error.sh"

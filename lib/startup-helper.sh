@@ -1,6 +1,4 @@
 # startup-helper.sh - inicializador do serviço
-# daqui pra baixo, vai tudo na base do #confia
-
 
 #    This file is part of BatService.
 #
@@ -17,38 +15,14 @@
 #    You should have received a copy of the GNU General Public License
 #    along with BatService.  If not, see <https://www.gnu.org/licenses/>.
 
-if [ $(id -u) -ne 0 ]; then
-  printerr "Privilégios root são necessários!"
-  error $E_NOROOT
-fi
+SERVICE_CACHE="$MODDIR/log"
 
-# FAZ REGISTROS NO DIRETÓRIO APROPRIADO
-if [ "$TERMUX_PREFIX" = "" ]; then
-  TERMUX_PREFIX="/data/data/com.termux/files/usr"
-fi
+mkdir -p "$SERVICE_CACHE"
 
-if [ "$TERMUX_PREFIX" = "$PREFIX" ]; then
+echo "\n" \
+  "====== REGISTRO" "$NAME"  "======\n" \
+  ""            "$(date)"          "\n" \
+  "=================================\n" \
+ >> "$SERVICE_CACHE/out.txt"
 
-  # Gambiarra para pegar o endereço correto da "home"
-  TERMUX_HOME="$(cd $PREFIX/../home && pwd)"
-  TERMUX_HOME_CACHE="$TERMUX_HOME/.cache"
-  SERVICE_CACHE="$TERMUX_HOME_CACHE/$Name"
-  backup_perms "$TERMUX_HOME"
-
-  # Necessário para evitar que arquivos root prejudiquem a remoção do aplicativo
-  mkdir -p "$SERVICE_CACHE"
-  # caso o diretório .cache seja criado agora
-  restore_owner "$TERMUX_HOME_CACHE"
-
-  echo "\n" \
-    "====== REGISTRO" "$NAME"  "======\n" \
-    ""            "$(date)"          "\n" \
-    "=================================\n" \
- >> "$SERVICE_CACHE/out.log"
-
-  restore_owner_r "$SERVICE_CACHE"
-  exec>> "$SERVICE_CACHE/out.log"
-
-fi
-
-unset TERMUX_PREFIX
+exec>> "$SERVICE_CACHE/out.txt"
