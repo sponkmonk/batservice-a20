@@ -15,7 +15,4 @@
 #    You should have received a copy of the GNU General Public License
 #    along with BatService.  If not, see <https://www.gnu.org/licenses/>.
 
-# Os limites pré-definidos são:
-#   Continuar carregamento: 45 %
-#   Parar carregamento: 50 %
-su -c "$PREFIX/bin/batservice.sh 45 50"
+su -c "$PREFIX/bin/batservice.sh"

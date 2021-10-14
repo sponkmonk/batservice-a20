@@ -21,27 +21,27 @@ if [ $(id -u) -eq 0 ]; then
 fi
 
 
-EXIT_FILE="/sdcard/batservice.exit"
-echo "Encerrando BatService. Isto não deve demorar mais que 1 minuto"
-echo "Root é necessário para criar/remover o arquivo de erros da memória interna, mas você pode rejeitar a solicitação se já encerrou o BatService."
-su -c "touch $EXIT_FILE &&
+EXIT_FILE="$PREFIX/etc/batservice/exit.err"
+if [ ! -r "EXIT_FILE" ]; then
+  echo "Encerrando BatService. Isto não deve demorar mais que 1 minuto"
+  touch $EXIT_FILE
   tm=60
   while [ -r $EXIT_FILE ]; do
-    tm=\$(expr \$tm - 1)
-    if [ \$tm -eq 0 ]; then
+    if [ $tm -eq 0 ]; then
       rm $EXIT_FILE
       break
     fi
+    tm=$(expr $tm - 1)
     sleep 1
-  done"
+  done
+fi
 
 echo "Removendo BatService incondicionalmente..."
-rm $HOME/.termux/boot/batservice-boot.sh
+rm $HOME/.termux/boot/batservice-termux.sh
 rm $PREFIX/bin/batservice.sh
-rm $PREFIX/lib/batservice/startup-helper.sh
-rmdir $PREFIX/lib/batservice
-rm $PREFIX/share/batservice/COPYING
-rmdir $PREFIX/share/batservice
+rm -r $PREFIX/lib/batservice
+rm -r $PREFIX/share/batservice
+rm -r $PREFIX/etc/batservice
 
 echo "Terminado!"
 echo "by cleds.upper"

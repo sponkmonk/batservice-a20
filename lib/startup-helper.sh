@@ -33,21 +33,20 @@ if [ "$TERMUX_PREFIX" = "$PREFIX" ]; then
   TERMUX_HOME="$(cd $PREFIX/../home && pwd)"
   TERMUX_HOME_CACHE="$TERMUX_HOME/.cache"
   SERVICE_CACHE="$TERMUX_HOME_CACHE/$Name"
+  backup_perms "$TERMUX_HOME"
 
   # Necessário para evitar que arquivos root prejudiquem a remoção do aplicativo
-  user=$(stat -c %U $PREFIX)
-  group=$(stat -c %G $PREFIX)
   mkdir -p "$SERVICE_CACHE"
   # caso o diretório .cache seja criado agora
-  chown ${user}:${group} "$TERMUX_HOME_CACHE"
+  restore_owner "$TERMUX_HOME_CACHE"
 
   echo "\n" \
     "====== REGISTRO" "$NAME"  "======\n" \
     ""            "$(date)"          "\n" \
     "=================================\n" \
  >> "$SERVICE_CACHE/out.log"
-  # Recursivamente garantir a posse do aplicativo sobre os arquivos em seu território
-  chown -R ${user}:${group} "$SERVICE_CACHE"
+
+  restore_owner_r "$SERVICE_CACHE"
   exec>> "$SERVICE_CACHE/out.log"
 
 fi
