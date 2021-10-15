@@ -19,10 +19,10 @@ SERVICE_CACHE="$MODDIR/log"
 
 mkdir -p "$SERVICE_CACHE"
 
-echo "\n" \
-  "====== REGISTRO" "$NAME"  "======\n" \
-  ""            "$(date)"          "\n" \
-  "=================================\n" \
+echo "
+  ====== REGISTRO" "$NAME"  "======
+"            "$(date)"          "
+  =================================" \
  >> "$SERVICE_CACHE/out.txt"
 
 exec>> "$SERVICE_CACHE/out.txt"
