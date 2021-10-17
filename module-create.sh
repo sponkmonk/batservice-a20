@@ -8,6 +8,7 @@ mkdir -p out/META-INF/com/google/android
 cp tools/module-installer.sh out/META-INF/com/google/android/update-binary
 echo "#MAGISK" > out/META-INF/com/google/android/updater-script
 
+cp COPYING out/
 cp module.prop out/
 cp service.sh out/
 cp -r lib out/lib
@@ -19,8 +20,8 @@ else
 fi
 
 cd out
-zip -r BatService-A20-1.1.211014.zip META-INF lib $PAR_DATA module.prop service.sh
-mv BatService-A20-1.1.211014.zip ../
+zip -r BatService-A20-1.1.211017.zip META-INF lib $PAR_DATA module.prop service.sh
+mv BatService-A20-1.1.211017.zip ../
 cd ..
 rm -r out
 

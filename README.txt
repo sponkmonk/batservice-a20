@@ -44,8 +44,8 @@ Mas você pode definir quaisquer limites entre 15 e 100% alterando o arquivo de 
 Você deve criar uma cópia dos arquivos presentes no endereço "/sys/class/power_supply/battery" em "qualquer/endereço". Para isso, defina a variável de ambiente BWD com esse endereço:
   $ export BWD="qualquer/endereço"
 
-Se estiver no Linux, exporte também o endereço para os arquivos de configuração e erro:
-  $ export DATA="qualquer/outro/endereço"
+Se estiver no Linux, exporte o endereço para o diretório do serviço:
+  $ export MODDIR="qualquer/outro/endereço"
 
 Também exporte a seguinte variável para que o script mostre mensagens/erros na tela em vez de salvar num arquivo de registro:
   $ export NO_SERVICE=1
@@ -53,16 +53,6 @@ Também exporte a seguinte variável para que o script mostre mensagens/erros na
 Desta forma, é possível executar o script em modo de usuário sem causar alterações nos arquivos de sistema.
 
 NOTA: no código fonte disponível no GitHub, há um diretório 'test' com todos os arquivos prontos para uso.
-
-
-6. LIMPANDO 'CACHE'
-
-Você deve limpar periodicamente os registros que o serviço cria. Para isto, acesse o diretório do módulo em:
-  <módulo> = /data/adb/modules/batservice-a20
-
-E remova o arquivo presente no diretório 'log'.
-
-Uma alternativa para esse trabalho manual é instalar somente a versão "final" do módulo.
 
 
 PROBLEMAS?

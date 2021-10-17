@@ -17,12 +17,22 @@
 
 SERVICE_CACHE="$MODDIR/log"
 
+log_cleanup () {
+  if [ -r "$SERVICE_CACHE/out.log" ]; then
+
+    if [ $(stat -c "%s" "$SERVICE_CACHE/out.log") -gt 30000 ]; then
+      sed -i 1,7d "$SERVICE_CACHE/out.log"
+    fi
+  fi
+}
+
 mkdir -p "$SERVICE_CACHE"
 
 echo "
-  ====== REGISTRO" "$NAME"  "======
+  ====== REGISTRO" "$NAME" "=======
 "            "$(date)"          "
   =================================" \
- >> "$SERVICE_CACHE/out.txt"
+ >> "$SERVICE_CACHE/out.log"
 
-exec>> "$SERVICE_CACHE/out.txt"
+exec>> "$SERVICE_CACHE/out.log"
+
