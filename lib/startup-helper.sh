@@ -1,7 +1,6 @@
 # startup-helper.sh - inicializador do serviço
 # daqui pra baixo, vai tudo na base do #confia
 
-
 #    This file is part of BatService.
 #
 #    BatService is free software: you can redistribute it and/or modify
@@ -40,15 +39,24 @@ if [ "$TERMUX_PREFIX" = "$PREFIX" ]; then
   # caso o diretório .cache seja criado agora
   restore_owner "$TERMUX_HOME_CACHE"
 
-  echo "\n" \
-    "====== REGISTRO" "$NAME"  "======\n" \
-    ""            "$(date)"          "\n" \
-    "=================================\n" \
+  echo "
+  ====== REGISTRO" "$NAME" "=======
+"            "$(date)"          "
+  =================================" \
  >> "$SERVICE_CACHE/out.log"
 
   restore_owner_r "$SERVICE_CACHE"
   exec>> "$SERVICE_CACHE/out.log"
 
 fi
+
+log_cleanup () {
+  if [ -r "$SERVICE_CACHE/out.log" ]; then
+
+    if [ $(stat -c "%s" "$SERVICE_CACHE/out.log") -gt 30000 ]; then
+      sed -i 1,7d "$SERVICE_CACHE/out.log"
+    fi
+  fi
+}
 
 unset TERMUX_PREFIX

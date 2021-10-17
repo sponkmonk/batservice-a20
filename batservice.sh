@@ -21,7 +21,7 @@
 NAME="BATSERVICE"
 Name="BatService"
 name="batservice"
-VERSION="1.1.211014"
+VERSION="1.1.211017"
 
 
 if [ "$SERVICE_LIB" = "" ]; then
@@ -41,6 +41,8 @@ fi
 
 if [ "$NO_SERVICE" = "" ]; then
   . "$SERVICE_LIB/startup-helper.sh"
+else
+  log_cleanup () { :; }
 fi
 
 . "$SERVICE_LIB/config.sh"
@@ -71,6 +73,7 @@ while [ ! -r "$EXIT_FILE" ]; do
 
   if [ $prev_percent -ne $percent ]; then
     battery_log
+    log_cleanup
   fi
 
   if ( [ "$status" = "Not charging" ] || [ "$status" = "Discharging" ] ); then

@@ -63,11 +63,15 @@ Reinicie o sistema Android para os novos valores terem efeito.
 
 
 5. TESTANDO/ALTERANDO CÓDIGO
+
 Você deve criar uma cópia dos arquivos presentes no endereço "/sys/class/power_supply/battery" em "qualquer/endereço". Para isso, defina a variável de ambiente BWD com esse endereço:
   $ export BWD="qualquer/endereço"
 
-Se estiver no Linux, exporte também o endereço para o arquivo de código de erros/encerramento:
-  $ export EXIT_FILE="qualquer/erro"
+Se estiver no Linux, exporte também o endereço para os arquivos de configuração e erro:
+  $ export DATA="qualquer/outro/endereço"
+
+Também exporte a seguinte variável para que o script mostre mensagens/erros na tela em vez de salvar num arquivo de registro:
+  $ export NO_SERVICE=1
 
 Desta forma, é possível executar o script em modo de usuário sem causar alterações nos arquivos de sistema.
 

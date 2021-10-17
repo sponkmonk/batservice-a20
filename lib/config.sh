@@ -27,7 +27,7 @@ config_update=0
 
 config_refresh () {
   if [ -r "$CONFIG" ]; then
-    changed=$(stat -c "%Y" $CONFIG)
+    changed=$(stat -c "%Y" "$CONFIG")
     if [ $changed -le $config_update ]; then
       return 0
     fi
