@@ -19,9 +19,10 @@ if [ "$BWD" = "" ]; then
 fi
 
 Bpercent="${BWD}/capacity"
-Bvoltage="${BWD}/voltage_now"
+Bvoltage="${BWD}/voltage_avg"
 Bstatus="${BWD}/status"
-Bcurrent="${BWD}/current_now"
+Bcurrent="${BWD}/current_avg"
+Bcurrentnow="${BWD}/current_now"
 Btemp="${BWD}/temp"
 
 # Controlador de carga do Galaxy A20 {
@@ -97,16 +98,23 @@ battery_status () {
   status=$(cat "$Bstatus")
 
   # corrige o status para "Not charging" quando a corrente varia abaixo de |10| mA
-  battery_current
-  if ( [ "$status" = "Charging" ] && [ $current -le $RATIONALE_MAMAX ] && [ $current -ge $RATIONALE_MAMIN ] ); then
+  battery_current_now
+  if ( [ "$status" = "Charging" ] && [ $current_now -le $RATIONALE_MAMAX ] && [ $current_now -ge $RATIONALE_MAMIN ] ); then
     status="Not charging"
   fi
 }
 
 
+battery_current_now () {
+  current_now=$(cat "$Bcurrentnow")
+  if [ $current_now -ge 10000 ]; then
+    current_now=$(expr $current_now / 1000)
+  fi
+}
+
 battery_current () {
   current=$(cat "$Bcurrent")
-  if [ $current -ge  10000 ]; then
+  if [ $current -ge 10000 ]; then
     current=$(expr $current / 1000)
   fi
 }

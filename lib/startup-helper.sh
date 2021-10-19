@@ -32,7 +32,7 @@ if [ "$TERMUX_PREFIX" = "$PREFIX" ]; then
   TERMUX_HOME="$(cd $PREFIX/../home && pwd)"
   TERMUX_HOME_CACHE="$TERMUX_HOME/.cache"
   SERVICE_CACHE="$TERMUX_HOME_CACHE/$Name"
-  backup_perms "$TERMUX_HOME"
+  backup_owner "$TERMUX_HOME"
 
   # Necessário para evitar que arquivos root prejudiquem a remoção do aplicativo
   mkdir -p "$SERVICE_CACHE"
