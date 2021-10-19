@@ -20,8 +20,8 @@ else
 fi
 
 cd out
-zip -r BatService-A20-1.1.211017.zip META-INF lib $PAR_DATA module.prop service.sh
-mv BatService-A20-1.1.211017.zip ../
+zip -r BatService-A20-1.2.211018.zip META-INF lib $PAR_DATA module.prop service.sh
+mv BatService-A20-1.2.211018.zip ../
 cd ..
 rm -r out
 
