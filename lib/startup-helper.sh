@@ -22,6 +22,7 @@ log_cleanup () {
 
     if [ $(stat -c "%s" "$SERVICE_CACHE/out.log") -gt 30000 ]; then
       sed -i 1,7d "$SERVICE_CACHE/out.log"
+      exec>> "$SERVICE_CACHE/out.log"
     fi
   fi
 }

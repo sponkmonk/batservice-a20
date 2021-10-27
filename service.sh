@@ -21,7 +21,7 @@
 NAME="BATSERVICE"
 Name="BatService"
 name="batservice"
-VERSION="1.2.211018"
+VERSION="1.2.211027"
 
 if [ "$MODDIR" = "" ]; then
   MODDIR=${0%/*}
