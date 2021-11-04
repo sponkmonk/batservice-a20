@@ -2,6 +2,9 @@
 
 # Este script apenas empacota o módulo com todos os arquivos necessários
 
+NAME=BatService-A20
+VERSION=v1.3.211104
+
 echo "Criando pacote Magisk..."
 
 mkdir -p out/META-INF/com/google/android
@@ -20,8 +23,8 @@ else
 fi
 
 cd out
-zip -r BatService-A20-v1.2.211027-Magisk.zip META-INF lib $PAR_DATA module.prop service.sh
-mv BatService-A20-v1.2.211027-Magisk.zip ../
+zip -r $NAME-$VERSION-Magisk.zip META-INF lib $PAR_DATA module.prop service.sh
+mv $NAME-$VERSION-Magisk.zip ../
 cd ..
 rm -r out
 

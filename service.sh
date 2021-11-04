@@ -1,6 +1,6 @@
 #!/system/bin/sh
 
-#    BatService v1.2 - battery conservation mode for Galaxy A20
+#    BatService v1.3 - battery conservation mode for Galaxy A20
 #
 #    Copyright (C) 2021 Cledson Ferreira
 #
@@ -21,7 +21,7 @@
 NAME="BATSERVICE"
 Name="BatService"
 name="batservice"
-VERSION="1.2.211027"
+VERSION="1.3.211104"
 
 if [ "$MODDIR" = "" ]; then
   MODDIR=${0%/*}
@@ -56,6 +56,10 @@ fi
 
 prev_percent=0
 not_charging_set=$DISABLED
+
+echo " -*- STATUS DA BATERIA -*- "
+echo " $(date) "
+echo "  ============================="
 
 while [ ! -r "$EXIT_FILE" ]; do
 
