@@ -134,7 +134,6 @@ battery_voltage () {
 
 # depende de chamadas às funções anteriores
 battery_log () {
-  echo " -*- STATUS DA BATERIA -*- "
   echo "$percent % ($status)"
   echo "$current mA"
   echo "$voltage mV"

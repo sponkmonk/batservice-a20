@@ -39,11 +39,8 @@ if [ "$TERMUX_PREFIX" = "$PREFIX" ]; then
   # caso o diretório .cache seja criado agora
   restore_owner "$TERMUX_HOME_CACHE"
 
-  echo "
-  ====== REGISTRO" "$NAME" "=======
-"            "$(date)"          "
-  =================================" \
- >> "$SERVICE_CACHE/out.log"
+  echo "  ====== REGISTRO" "$NAME" "======="\
+  >> "$SERVICE_CACHE/out.log"
 
   restore_owner_r "$SERVICE_CACHE"
   exec>> "$SERVICE_CACHE/out.log"
@@ -54,7 +51,7 @@ log_cleanup () {
   if [ -r "$SERVICE_CACHE/out.log" ]; then
 
     if [ $(stat -c "%s" "$SERVICE_CACHE/out.log") -gt 30000 ]; then
-      sed -i 1,7d "$SERVICE_CACHE/out.log"
+      sed -i 1,1700d "$SERVICE_CACHE/out.log"
       exec>> "$SERVICE_CACHE/out.log"
     fi
   fi
