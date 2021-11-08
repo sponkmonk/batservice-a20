@@ -107,16 +107,10 @@ battery_status () {
 
 battery_current_now () {
   current_now=$(cat "$Bcurrentnow")
-  if [ $current_now -ge 10000 ]; then
-    current_now=$(expr $current_now / 1000)
-  fi
 }
 
 battery_current () {
   current=$(cat "$Bcurrent")
-  if [ $current -ge 10000 ]; then
-    current=$(expr $current / 1000)
-  fi
 }
 
 
