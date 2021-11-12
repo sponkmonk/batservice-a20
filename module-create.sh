@@ -3,7 +3,7 @@
 # Este script apenas empacota o módulo com todos os arquivos necessários
 
 NAME=BatService-A20
-VERSION=v1.3.211104
+VERSION=v1.3.211112
 
 echo "Criando pacote Magisk..."
 
