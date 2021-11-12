@@ -21,7 +21,7 @@
 NAME="BATSERVICE"
 Name="BatService"
 name="batservice"
-VERSION="1.3.211104"
+VERSION="1.3.211112"
 
 if [ "$MODDIR" = "" ]; then
   MODDIR=${0%/*}
@@ -111,6 +111,7 @@ while [ ! -r "$EXIT_FILE" ]; do
 done
 
 battery_switch_set default
+rm "$EXIT_FILE"
 
 echo "Terminado"
 echo "by cleds.upper"
