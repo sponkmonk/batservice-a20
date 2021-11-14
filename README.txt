@@ -52,7 +52,7 @@ Remova também o relatório do BatService, caso não vá usar futuramente:
 
 4. ALTERANDO PERCENTUAIS
 
-Os valores padrões são ótimos para a conservação da vida útil da bateria, segundo os estudos disponíveis em <https://batteryuniversity.com>.
+Os valores padrões são ótimos para a conservação da vida útil da bateria, segundo os estudos disponíveis em Battery University¹.
 
 Mas você pode definir quaisquer limites entre 15 e 100% passando esses valores como argumentos para o programa:
   # ./batservice.sh [MÍNIMO] [MÁXIMO]
@@ -83,5 +83,8 @@ PROBLEMAS?
 Você deve entrar em contato comigo pela rede social Mastodon. Recebo muito spam no meu e-mail e possivelmente vou ignorar qualquer mensagem de estranhes que eu tenha recebido por lá.
 
 Mastodon: @cledson_cavalcanti@mastodon.technology
+
+
+[1] https://batteryuniversity.com/article/bu-808-how-to-prolong-lithium-based-batteries
 
 by cleds.upper
