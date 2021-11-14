@@ -1,6 +1,6 @@
 BATSERVICE (MAGISK PORT)
 
-Este é um simples módulo Magisk para o Galaxy A20, que conserva a bateria entre 45 e 50 %, o que possibilita usar um "power bank" como se este fosse a própria bateria do dispositivo, prolongando bastante a vida útil da bateria interna do dispositivo.
+Este é um simples módulo Magisk¹ para o Galaxy A20, que conserva a bateria entre 45 e 50 %, o que possibilita usar um "power bank" como se este fosse a própria bateria do dispositivo, prolongando bastante a vida útil da bateria interna do dispositivo.
 
 Isto funciona com praticamente todo carregador capaz de entregar a potência necessária para usar o Galaxy A20, isto é, qualquer fonte com potência igual ou maior que 5 W.
 
@@ -32,7 +32,7 @@ Remova o módulo normalmente pelo Magisk e reinicie o Android.
 
 4. ALTERANDO PERCENTUAIS
 
-Os valores padrões são ótimos para a conservação da vida útil da bateria, segundo os estudos disponíveis em <https://batteryuniversity.com>.
+Os valores padrões são ótimos para a conservação da vida útil da bateria, segundo os estudos disponíveis em Battery University².
 
 Mas você pode definir quaisquer limites entre 15 e 100% alterando o arquivo de configuração "config.txt" no diretório "<módulo>/data". Por exemplo:
   charging-continue 70
@@ -60,5 +60,9 @@ PROBLEMAS?
 Você deve entrar em contato comigo pela rede social Mastodon. Recebo muito spam no meu e-mail e possivelmente vou ignorar qualquer mensagem de estranhes que eu tenha recebido por lá.
 
 Mastodon: @cledson_cavalcanti@mastodon.technology
+
+
+[1] https://github.com/topjohnwu/Magisk
+[2] https://batteryuniversity.com/article/bu-808-how-to-prolong-lithium-based-batteries
 
 by cleds.upper
