@@ -8,11 +8,11 @@ if [ $e -ne 0 ]; then
 else
   notify_txt () {
     if ( [ "$status" = "Not charging" ] || [ "$status" = "Charging" ] ); then
-      p=" (🔌 $current)"
+      p=" (🔌 $current mA)"
     else
       p=""
     fi
-    statustxt="🔋 $percent %$p ⚡ $voltage V 🌡 $temp °C"
+    statustxt="🔋 $percent %$p ⚡ $voltage mV 🌡 $temp °C"
   }
 
   notify_status () {
