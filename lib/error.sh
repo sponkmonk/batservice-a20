@@ -17,6 +17,8 @@
 EXIT_FILE="$DATA/exit.err"
 # Se o programa encerra de forma inesperada, esse arquivo pode conter um dos códigos de erros das variáveis E_*.
 
+exec 2>&1
+
 error () {
   if [ $1 -ne 0 ]; then
     backup_owner "$DATA"
@@ -27,7 +29,7 @@ error () {
 }
 
 printerr () {
-  echo "$@" >&2
+  echo "ERR: $@"
 }
 
 

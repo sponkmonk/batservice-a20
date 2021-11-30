@@ -128,15 +128,26 @@ battery_voltage () {
 
 # depende de chamadas às funções anteriores
 battery_log () {
-  echo "$percent % ($status)"
-  echo "$current mA"
-  echo "$voltage mV"
-  echo "$temp °C"
+  battery_percent
+  battery_status
+  echo "$1$percent % ($status)"
+
+  if [ "$TERMUX_API" != "" ]; then
+    echo "$1$current_now mA"
+  else
+    battery_current
+    echo "$1$current mA"
+  fi
+  battery_voltage
+  echo "$1$voltage mV"
+  battery_temp
+  echo "$1$temp °C"
 
   hstatus="ATIVADO"
+  battery_switch_set get
   if [ $switch_status -ne $ENABLED ]; then
     hstatus="DESATIVADO"
   fi
-  echo "Interruptor de carga: $hstatus"
-  echo
+  echo "$1 Interruptor de carga: $hstatus"
+  echo "$1"
 }

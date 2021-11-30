@@ -1,6 +1,6 @@
 #!/system/bin/sh
 
-#    BatService v1.3 - battery conservation mode for Galaxy A20
+#    BatService v2.0 - battery conservation mode for Galaxy A20
 #
 #    Copyright (C) 2021 Cledson Ferreira
 #
@@ -21,8 +21,11 @@
 NAME="BATSERVICE"
 Name="BatService"
 name="batservice"
-VERSION="1.3.211112"
+VERSION="2.0.211130"
 
+if [ -f $PREFIX/bin/termux-notification ]; then
+  TERMUX_API=1
+fi
 
 if [ "$SERVICE_LIB" = "" ]; then
   SERVICE_LIB="$PREFIX/lib/$name"
@@ -38,14 +41,6 @@ if [ "$DATA" = "" ]; then
 fi
 
 . "$SERVICE_LIB/error.sh"
-
-NO_SERVICE=1
-if [ "$NO_SERVICE" = "" ]; then
-  . "$SERVICE_LIB/startup-helper.sh"
-else
-  log_cleanup () { :; }
-fi
-
 . "$SERVICE_LIB/config.sh"
 . "$SERVICE_LIB/battery.sh"
 
@@ -59,6 +54,7 @@ if [ -r "$EXIT_FILE" ]; then
 fi
 
 prev_percent=0
+battery_percent
 not_charging_set=$DISABLED
 
 echo " -*- STATUS DA BATERIA -*- "
@@ -69,17 +65,10 @@ while [ ! -r "$EXIT_FILE" ]; do
 
   config_refresh
 
-  battery_percent
-  battery_status
-  battery_current
-  battery_voltage
-  battery_temp
-
-  battery_switch_set get
-
   if [ $prev_percent -ne $percent ]; then
     battery_log
-    log_cleanup
+  elif [ "$TERMUX_API" != "" ]; then
+    battery_log '# '
   fi
 
   if ( [ "$status" = "Not charging" ] || [ "$status" = "Discharging" ] ); then
