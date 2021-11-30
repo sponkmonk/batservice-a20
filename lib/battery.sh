@@ -149,5 +149,6 @@ battery_log () {
     hstatus="DESATIVADO"
   fi
   echo "$1 Interruptor de carga: $hstatus"
-  echo "$1"
+
+  if [ "$1" = "" ]; then echo ; fi
 }
