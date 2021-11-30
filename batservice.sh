@@ -39,6 +39,7 @@ fi
 
 . "$SERVICE_LIB/error.sh"
 
+NO_SERVICE=1
 if [ "$NO_SERVICE" = "" ]; then
   . "$SERVICE_LIB/startup-helper.sh"
 else
