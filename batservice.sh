@@ -27,11 +27,11 @@ if [ -f $PREFIX/bin/termux-notification ]; then
   TERMUX_API=1
 fi
 
-if [ "$SERVICE_LIB" = "" ]; then
-  SERVICE_LIB="$PREFIX/lib/$name"
+if [ "$LIB" = "" ]; then
+  LIB="$PREFIX/lib/$name"
 fi
 
-. "$SERVICE_LIB/perms.sh"
+. "$LIB/perms.sh"
 if [ "$DATA" = "" ]; then
   DATA="$PREFIX/etc/$name"
   backup_owner "$PREFIX"
@@ -40,9 +40,9 @@ if [ "$DATA" = "" ]; then
   restore_owner "$DATA"
 fi
 
-. "$SERVICE_LIB/error.sh"
-. "$SERVICE_LIB/config.sh"
-. "$SERVICE_LIB/battery.sh"
+. "$LIB/error.sh"
+. "$LIB/config.sh"
+. "$LIB/battery.sh"
 
 
 echo "$Name - conservação de bateria para o Galaxy A20"

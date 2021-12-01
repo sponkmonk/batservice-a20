@@ -42,17 +42,18 @@ else
 
 fi
 
-
-SERVICE_CACHE="$HOME/.cache/BatService"
-mkdir -p "$SERVICE_CACHE"
-exec>> "$SERVICE_CACHE/out.log"
+if [ "$CACHE" = "" ]; then
+  CACHE="$HOME/.cache/BatService"
+fi
+mkdir -p "$CACHE"
+exec>> "$CACHE/out.log"
 
 log_cleanup () {
-  if [ -r "$SERVICE_CACHE/out.log" ]; then
+  if [ -r "$CACHE/out.log" ]; then
 
-    if [ $(stat -c "%s" "$SERVICE_CACHE/out.log") -gt 30000 ]; then
-      sed -i 1,1700d "$SERVICE_CACHE/out.log"
-      exec>> "$SERVICE_CACHE/out.log"
+    if [ $(stat -c "%s" "$CACHE/out.log") -gt 30000 ]; then
+      sed -i 1,1700d "$CACHE/out.log"
+      exec>> "$CACHE/out.log"
     fi
   fi
 }
@@ -66,13 +67,13 @@ while [ 0 ]; do
 
     _status=$(echo "$log_line" | grep -Eo '[A-Z][a-z]+( [a-z]+)*ging')
     if [ $? -eq 0 ]; then status=$_status; fi
-    _percent=$(echo "$log_line" | grep " %" | grep -Eo '[0-9]+')
+    _percent=$(echo "$log_line" | grep -Eo '[0-9]+ %')
     if [ $? -eq 0 ]; then percent=$_percent; fi
-    _current=$(echo "$log_line" | grep " mA" | grep -Eo '[+\-]{0,1}[0-9]+')
+    _current=$(echo "$log_line" | grep -Eo '-{0,1}[0-9]+ mA')
     if [ $? -eq 0 ]; then current=$_current; fi
-    _voltage=$(echo "$log_line" | grep " mV" | grep -Eo '[0-9]+')
+    _voltage=$(echo "$log_line" | grep -Eo '[0-9]+ mV')
     if [ $? -eq 0 ]; then voltage=$_voltage; fi
-    _temp=$(echo "$log_line" | grep " .C" | grep -Eo '[0-9]+')
+    _temp=$(echo "$log_line" | grep -Eo '[0-9]+ .C')
     if [ $? -eq 0 ]; then
       temp=$_temp
       notify_status
