@@ -21,7 +21,7 @@
 NAME="BATSERVICE"
 Name="BatService"
 name="batservice"
-VERSION="2.0.211130"
+VERSION="2.0.211131"
 
 if [ -f $PREFIX/bin/termux-notification ]; then
   TERMUX_API=1
@@ -54,7 +54,6 @@ if [ -r "$EXIT_FILE" ]; then
 fi
 
 prev_percent=0
-battery_percent
 not_charging_set=$DISABLED
 
 echo " -*- STATUS DA BATERIA -*- "
@@ -65,6 +64,7 @@ while [ ! -r "$EXIT_FILE" ]; do
 
   config_refresh
 
+  battery_percent
   if [ $prev_percent -ne $percent ]; then
     battery_log
   elif [ "$TERMUX_API" != "" ]; then
