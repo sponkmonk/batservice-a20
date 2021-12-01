@@ -19,9 +19,20 @@ config_number_get () {
   cat $CONFIG | grep $1 | grep -Eo '[0-9]+'
 }
 
+config_bool_get () {
+  cat $CONFIG | grep $1 | grep -Eo '(true|false)'
+}
+
 MIN_PERCENT=45
 MAX_PERCENT=50
-DELAY_REFRESH=60
+
+if [ "$TERMUX_API" = "" ]; then
+  DELAY_REFRESH=60
+else
+  DELAY_REFRESH=6
+fi
+
+NEVER_STOP="false"
 
 config_update=0
 
@@ -59,6 +70,14 @@ config_refresh () {
     fi
 
     unset delay
+
+    never_stop=$(config_bool_get charging-never-stop)
+    if [ "$never_stop" = "" ]; then
+      :
+    else
+      NEVER_STOP="$never_stop"
+    fi
+
+    unset never_stop
   fi
 }
-

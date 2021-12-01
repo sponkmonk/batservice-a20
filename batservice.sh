@@ -18,27 +18,24 @@
 #    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
-NAME="BATSERVICE"
+if [ "$NO_PERMS" = "" ]; then
+  . "$PREFIX/lib/batservice/env.rc"
+  if [ $? -ne 0 ]; then
+    echo "ERR: configuração inválida!"
+    exit 1
+  fi
+fi
+
 Name="BatService"
-name="batservice"
-VERSION="2.0.211131"
+VERSION="2.0.211201"
 
-if [ -f $PREFIX/bin/termux-notification ]; then
-  TERMUX_API=1
-fi
-
-if [ "$LIB" = "" ]; then
-  LIB="$PREFIX/lib/$name"
-fi
 
 . "$LIB/perms.sh"
-if [ "$DATA" = "" ]; then
-  DATA="$PREFIX/etc/$name"
-  backup_owner "$PREFIX"
-  mkdir -p "$DATA"
-  restore_owner "$PREFIX/etc"
-  restore_owner "$DATA"
-fi
+
+backup_owner "$PREFIX"
+mkdir -p "$DATA"
+restore_owner "$PREFIX/etc"
+restore_owner "$DATA"
 
 . "$LIB/error.sh"
 . "$LIB/config.sh"

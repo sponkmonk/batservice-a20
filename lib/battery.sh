@@ -14,10 +14,6 @@
 #    along with BatService.  If not, see <https://www.gnu.org/licenses/>.
 
 
-if [ "$BWD" = "" ]; then
-  BWD="/sys/class/power_supply/battery"
-fi
-
 Bpercent="${BWD}/capacity"
 Bvoltage="${BWD}/voltage_avg"
 Bstatus="${BWD}/status"
@@ -148,7 +144,7 @@ battery_log () {
   if [ $switch_status -ne $ENABLED ]; then
     hstatus="DESATIVADO"
   fi
-  echo "$1 Interruptor de carga: $hstatus"
+  echo "${1}Interruptor de carga: $hstatus"
 
-  if [ "$1" = "" ]; then echo ; fi
+  if [ "$1" = "" ]; then echo; fi
 }

@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/sh
+#!/bin/sh
 
 #    This file is part of BatService.
 #
@@ -49,6 +49,7 @@ install_file lib/config.sh $PREFIX/lib/batservice/
 install_file lib/battery.sh $PREFIX/lib/batservice/
 install_file lib/notify.sh $PREFIX/lib/batservice/
 chmod +x $PREFIX/lib/batservice/notify.sh
+install_file lib/env.rc $PREFIX/lib/batservice/
 
 install_file tools/batservice-termux.sh $HOME/.termux/boot/
 chmod +x $HOME/.termux/boot/batservice-termux.sh
