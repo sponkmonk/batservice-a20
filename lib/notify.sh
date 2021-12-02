@@ -68,7 +68,7 @@ if [ "$1" != "" ]; then
           val="false"
           ;;
         0)
-          sed -E -i 's|(charging-never-stop) .+|\1 true|g' teste.txt "$DATA/config.txt"
+          sed -E -i 's|(charging-never-stop) .+|\1 true|g' "$DATA/config.txt"
           ;;
         *)
           echo "charging-never-stop true" >> "$DATA/config.txt"
