@@ -68,7 +68,18 @@ while [ ! -r "$EXIT_FILE" ]; do
     battery_log '# '
   fi
 
-  if ( [ "$status" = "Not charging" ] || [ "$status" = "Discharging" ] ); then
+  if [ "$NEVER_STOP" = "true" ]; then
+
+    if [ $not_charging_set -eq $ENABLED ]; then
+      echo "ATIVAR carregamento"
+      battery_switch_set enable
+      not_charging_set=$DISABLED
+      echo
+      prev_percent=0
+      continue
+    fi
+
+  elif ( [ "$status" = "Not charging" ] || [ "$status" = "Discharging" ] ); then
 
     if ( [ $not_charging_set -eq $ENABLED ] && [ $percent -lt $MIN_PERCENT ] ); then
       echo "ATIVAR carregamento"
