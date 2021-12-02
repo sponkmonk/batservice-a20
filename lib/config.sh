@@ -63,7 +63,7 @@ config_refresh () {
     delay=$(config_number_get service-delay-not-charging)
     if [ "$delay" = "" ]; then
       :
-    elif ( [ $delay -lt 6] || [ $delay -gt 3600 ] ); then
+    elif ( [ $delay -lt 6 ] || [ $delay -gt 3600 ] ); then
       printerr "O tempo ocioso deve ser ser digitado em segundos, de 6 a 3600 segundos"
     else
       DELAY_REFRESH=$delay

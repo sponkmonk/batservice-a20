@@ -1,4 +1,4 @@
-#!/system/bin/sh
+#!/bin/sh
 
 #    BatService v2.0 - battery conservation mode for Galaxy A20
 #

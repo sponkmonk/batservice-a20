@@ -60,8 +60,8 @@ if [ "$1" != "" ]; then
     force-charge)
 
       get_charging_never_stop
-      local ival=$?
-      local val="true"
+      ival=$?
+      val="true"
       case "$ival" in
         1)
           sed -E -i 's|(charging-never-stop) .+|\1 false|g' "$DATA/config.txt"
