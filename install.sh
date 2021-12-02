@@ -1,5 +1,6 @@
 #!/bin/sh
 
+#    install.sh - instalador do BatService
 #    This file is part of BatService.
 #
 #    BatService is free software: you can redistribute it and/or modify
@@ -50,12 +51,18 @@ install_file lib/battery.sh $PREFIX/lib/batservice/
 install_file lib/notify.sh $PREFIX/lib/batservice/
 chmod +x $PREFIX/lib/batservice/notify.sh
 install_file lib/env.rc $PREFIX/lib/batservice/
+install_file lib/jobs.sh $PREFIX/lib/batservice/
 
 install_file tools/batservice-termux.sh $HOME/.termux/boot/
 chmod +x $HOME/.termux/boot/batservice-termux.sh
 
 install_file COPYING $PREFIX/share/batservice/
 
+echo "  Este programa é software livre: isto significa que você "
+echo "  pode usar, alterar, redistribuir ou vender (exceto "
+echo "  modificações!). Você pode ler os termos da Licença Pública "
+echo "  Geral GNU executando: 'less $PREFIX/share/batservice/COPYING'"
+echo
 echo "Instalação concluída."
 echo "Reinicie o sistema Android se o BatService não entrar em execução."
 echo "by cleds.upper"

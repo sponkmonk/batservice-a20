@@ -1,5 +1,7 @@
 #!/bin/sh
 
+#    remove.sh - desinstalador do BatService
+#
 #    This file is part of BatService.
 #
 #    BatService is free software: you can redistribute it and/or modify
@@ -36,12 +38,34 @@ if [ ! -r "EXIT_FILE" ]; then
   done
 fi
 
-echo "Removendo BatService incondicionalmente..."
+echo "Removendo BatService e todos os arquivos dependentes..."
 rm $HOME/.termux/boot/batservice-termux.sh
 rm $PREFIX/bin/batservice.sh
-rm -r $PREFIX/lib/batservice
-rm -r $PREFIX/share/batservice
-rm -r $PREFIX/etc/batservice
+
+rm $PREFIX/lib/batservice/perms.sh
+rm $PREFIX/lib/batservice/error.sh
+rm $PREFIX/lib/batservice/config.sh
+rm $PREFIX/lib/batservice/battery.sh
+rm $PREFIX/lib/batservice/notify.sh
+rm $PREFIX/lib/batservice/env.rc
+rm $PREFIX/lib/batservice/jobs.sh
+rmdir $PREFIX/lib/batservice
+
+rm $PREFIX/share/batservice/COPYING
+rmdir $PREFIX/share/batservice
+
+echo "Remover configuração e cache? [y/N]"
+read sel
+if ( [ "$sel" = "y" ] || [ "$sel" = "Y" ] ); then
+  rm $PREFIX/etc/batservice/config.txt
+  rmdir $PREFIX/etc/batservice
+  rm $HOME/.cache/BatService/out.log
+  rmdir $HOME/.cache/BatService
+else
+  echo "Você pode remover manualmente um dos seguintes arquivos:"
+  echo "CONFIG: $PREFIX/etc/batservice/config.txt"
+  echo "CACHE: $HOME/.cache/BatService/out.log"
+fi
 
 echo "Terminado!"
 echo "by cleds.upper"

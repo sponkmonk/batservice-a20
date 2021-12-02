@@ -29,7 +29,7 @@ MAX_PERCENT=50
 if [ "$TERMUX_API" = "" ]; then
   DELAY_REFRESH=60
 else
-  DELAY_REFRESH=6
+  DELAY_REFRESH=10
 fi
 
 NEVER_STOP="false"

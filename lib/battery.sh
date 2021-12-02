@@ -49,15 +49,19 @@ battery_switch_set () {
       ;;
     enable)
       mode=$ENABLED
+      echo "ATIVAR carregamento"
       ;;
     disable)
       mode=$DISABLED
+      echo "DESATIVAR carregamento"
       ;;
     default)
       mode=$DEFAULT
+      echo "RECUPERAR estado de carga"
       ;;
     *)
-      exit $E_WROPTION
+      printerr "Opção '$1' desconhecida!"
+      error $E_WROPTION
       ;;
   esac
 
@@ -69,6 +73,7 @@ battery_switch_set () {
     result=$(cat "$Bswitch")
     if [ $result -ne $mode ]; then
       echo $DEFAULT > "$Bswitch"
+      printerr "Impossível checar estado do controlador!"
       error $E_FASWITCH
     fi
 
@@ -76,6 +81,7 @@ battery_switch_set () {
       battery_status
       if [ "$status" = "Charging" ]; then
         echo $DEFAULT > "$Bswitch"
+        printerr "Controlador de carga INVÁLIDO!"
         error $E_WRSWITCH
       fi
     fi
@@ -121,22 +127,27 @@ battery_voltage () {
   voltage=$(expr $voltage / 1000)
 }
 
+# Atualiza todas as variáveis
+battery_status_all () {
+  battery_switch_set get
+  battery_percent
+  battery_status
+  battery_current
+  battery_temp
+  battery_voltage
+}
+
 
 # depende de chamadas às funções anteriores
 battery_log () {
-  battery_percent
-  battery_status
   echo "$1$percent % ($status)"
 
   if [ "$TERMUX_API" != "" ]; then
     echo "$1$current_now mA"
   else
-    battery_current
     echo "$1$current mA"
   fi
-  battery_voltage
   echo "$1$voltage mV"
-  battery_temp
   echo "$1$temp °C"
 
   hstatus="ATIVADO"

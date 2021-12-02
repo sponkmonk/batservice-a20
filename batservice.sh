@@ -27,7 +27,7 @@ if [ "$NO_PERMS" = "" ]; then
 fi
 
 Name="BatService"
-VERSION="2.0.211201"
+VERSION="2.0.211202"
 
 
 . "$LIB/perms.sh"
@@ -40,6 +40,7 @@ restore_owner "$DATA"
 . "$LIB/error.sh"
 . "$LIB/config.sh"
 . "$LIB/battery.sh"
+. "$LIB/jobs.sh"
 
 
 echo "$Name - conservação de bateria para o Galaxy A20"
@@ -50,64 +51,16 @@ if [ -r "$EXIT_FILE" ]; then
   rm "$EXIT_FILE"
 fi
 
-prev_percent=0
-not_charging_set=$DISABLED
-
 echo " -*- STATUS DA BATERIA -*- "
 echo " $(date) "
 echo "  ============================="
+
 
 while [ ! -r "$EXIT_FILE" ]; do
 
   config_refresh
 
-  battery_percent
-  if [ $prev_percent -ne $percent ]; then
-    battery_log
-  elif [ "$TERMUX_API" != "" ]; then
-    battery_log '# '
-  fi
-
-  if [ "$NEVER_STOP" = "true" ]; then
-
-    if [ $not_charging_set -eq $ENABLED ]; then
-      echo "ATIVAR carregamento"
-      battery_switch_set enable
-      not_charging_set=$DISABLED
-      echo
-      prev_percent=0
-      continue
-    fi
-
-  elif ( [ "$status" = "Not charging" ] || [ "$status" = "Discharging" ] ); then
-
-    if ( [ $not_charging_set -eq $ENABLED ] && [ $percent -lt $MIN_PERCENT ] ); then
-      echo "ATIVAR carregamento"
-      battery_switch_set enable
-      not_charging_set=$DISABLED
-      echo
-      prev_percent=0
-      continue
-    fi
-
-    sleep $DELAY_REFRESH
-
-  elif [ "$status" = "Charging" ]; then
-
-    if ( [ $not_charging_set -eq $ENABLED ] || [ $percent -ge $MAX_PERCENT ] ); then
-      echo "DESATIVAR carregamento"
-      battery_switch_set disable
-      not_charging_set=$ENABLED
-      echo
-      prev_percent=0
-      continue
-    fi
-
-    sleep 6
-
-  fi
-
-  prev_percent=$percent
+  jobs_main
 
 done
 
