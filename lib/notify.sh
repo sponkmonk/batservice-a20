@@ -44,8 +44,10 @@ send_status () {
   else
     local btn="⏹"
   fi
-  termux-notification -i batservice --ongoing --icon "battery_std" -t "Status do serviço" -c "$1" \
---button1 "$btn" --button1-action "$LIB/notify.sh force-charge" --button2 "❎" --button2-action "$LIB/notify.sh quit"
+  termux-notification -i batservice --ongoing --alert-once\
+    --icon "battery_std" -t "Status do serviço" -c "$1"\
+    --button1 "$btn" --button1-action "$LIB/notify.sh force-charge"\
+    --button2 "❎" --button2-action "$LIB/notify.sh quit"
 }
 
 
