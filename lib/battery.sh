@@ -142,7 +142,7 @@ battery_status_all () {
 battery_log () {
   echo "$1$percent % ($status)"
 
-  if [ "$TERMUX_API" != "" ]; then
+  if [ -n "$TERMUX_API" ]; then
     echo "$1$current_now mA"
   else
     echo "$1$current mA"
@@ -157,5 +157,5 @@ battery_log () {
   fi
   echo "${1}Interruptor de carga: $hstatus"
 
-  if [ "$1" = "" ]; then echo; fi
+  if [ -z "$1" ]; then echo; fi
 }

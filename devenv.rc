@@ -8,3 +8,7 @@ export LIB="$PWD/lib"
 export DATA="$PWD/test/config"
 export CACHE="$PWD/test/cache"
 export NO_PERMS=1
+
+if [ -f "$PREFIX/bin/termux-notification" ]; then
+  export TERMUX_API=1
+fi

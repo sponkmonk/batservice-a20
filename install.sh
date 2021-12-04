@@ -41,9 +41,6 @@ install_file() {
 }
 
 echo "Instalando BatService..."
-install_file batservice.sh $PREFIX/bin/
-chmod +x $PREFIX/bin/batservice.sh
-
 install_file lib/perms.sh $PREFIX/lib/batservice/
 install_file lib/error.sh $PREFIX/lib/batservice/
 install_file lib/config.sh $PREFIX/lib/batservice/
@@ -55,6 +52,9 @@ install_file lib/jobs.sh $PREFIX/lib/batservice/
 
 install_file tools/batservice-termux.sh $HOME/.termux/boot/
 chmod +x $HOME/.termux/boot/batservice-termux.sh
+
+install_file batservice.sh $PREFIX/bin/
+chmod +x $PREFIX/bin/batservice.sh
 
 install_file COPYING $PREFIX/share/batservice/
 

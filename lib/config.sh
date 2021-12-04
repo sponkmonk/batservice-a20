@@ -26,7 +26,7 @@ config_bool_get () {
 MIN_PERCENT=45
 MAX_PERCENT=50
 
-if [ "$TERMUX_API" = "" ]; then
+if [ -z "$TERMUX_API" ]; then
   DELAY_REFRESH=60
 else
   DELAY_REFRESH=10
@@ -47,7 +47,7 @@ config_refresh () {
     min=$(config_number_get charging-continue)
     max=$(config_number_get charging-stop)
 
-    if ( [ "$min" = "" ] || [ "$max" = "" ] ); then
+    if ( [ -z "$min" ] || [ -z "$max" ] ); then
       :
     elif ( [ $min -lt 15 ] || [ $max -le $min ] || [ $max -gt 100 ] \
       ); then
@@ -61,7 +61,7 @@ config_refresh () {
     unset max
 
     delay=$(config_number_get service-delay-not-charging)
-    if [ "$delay" = "" ]; then
+    if [ -z "$delay" ]; then
       :
     elif ( [ $delay -lt 6 ] || [ $delay -gt 3600 ] ); then
       printerr "O tempo ocioso deve ser ser digitado em segundos, de 6 a 3600 segundos"
@@ -72,7 +72,7 @@ config_refresh () {
     unset delay
 
     never_stop=$(config_bool_get charging-never-stop)
-    if [ "$never_stop" = "" ]; then
+    if [ -z "$never_stop" ]; then
       :
     else
       NEVER_STOP="$never_stop"

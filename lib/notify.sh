@@ -17,10 +17,10 @@
 
 
 send_message () {
-  termux-toast "$1"
+  termux-toast "BatService: $1"
 }
 
-if [ "$NO_PERMS" = "" ]; then
+if [ -z "$NO_PERMS" ]; then
   . "$PREFIX/lib/batservice/env.rc"
 else
   echo "AVISO: botões não funcionam em ambiente de teste"
@@ -50,10 +50,41 @@ send_status () {
     --button2 "❎" --button2-action "$LIB/notify.sh quit"
 }
 
+notify_status () {
+  if echo "$status" | grep -E '(Charging|Not charging)' >/dev/null; then
+    p="(🔌 $current)"
+  else
+    p=""
+  fi
+  statustxt="🔋 $percent $p ⚡ $voltage 🌡 $temp"
+  send_status "$statustxt"
+}
 
-if [ "$1" != "" ]; then
+notify_quit () {
+  termux-notification-remove batservice
+  exit 0
+}
 
-  case "$1" in
+
+if [ -z "$TERMUX_API" ]; then
+
+  unset send_message
+  unset send_status
+  unset notify_status
+  unset notify_quit
+
+  send_message () { :; }
+  send_status () { :; }
+  notify_status () { :; }
+  notify_quit() { exit 0; }
+
+fi
+
+if [ -n "$1" ]; then
+
+  if [ "$1" = "--no-logs" ]; then
+    NO_LOGS=1
+  else case "$1" in
     quit)
       echo 0 > "$DATA/exit.err"
       send_message "O serviço será encerrado"
@@ -89,77 +120,57 @@ if [ "$1" != "" ]; then
       echo "ERR: comando inválido!"
       exit 1
       ;;
-  esac
-
-  exit 0
+  esac; exit 0; fi # preguiça de identar
 
 fi
 
 
-if [ "$TERMUX_API" = "" ]; then
+if [ -z "$NO_LOGS" ]; then
+  log_cleanup () {
+    if [ -r "$CACHE/out.log" ]; then
+      if [ $(stat -c "%s" "$CACHE/out.log") -gt 30000 ]; then
+        sed -i 1,1700d "$CACHE/out.log"
+        exec>> "$CACHE/out.log"
+      fi
+    fi
+  }
 
-  notify_status () { :; }
-  notify_quit() { exit 0; }
-
+  mkdir -p "$CACHE"
+  exec>> "$CACHE/out.log"
 else
-
-  notify_status () {
-    if ( [ "$status" = "Not charging" ] || [ "$status" = "Charging" ] ); then
-      p=" (🔌 $current)"
-    else
-      p=""
-    fi
-    statustxt="🔋 $percent $p ⚡ $voltage 🌡 $temp"
-    send_status "$statustxt"
-  }
-
-  notify_quit () {
-    termux-notification-remove batservice
-    exit 0
-  }
-
+  log_cleanup () { :; }
 fi
-
-mkdir -p "$CACHE"
-exec>> "$CACHE/out.log"
-
-log_cleanup () {
-  if [ -r "$CACHE/out.log" ]; then
-
-    if [ $(stat -c "%s" "$CACHE/out.log") -gt 30000 ]; then
-      sed -i 1,1700d "$CACHE/out.log"
-      exec>> "$CACHE/out.log"
-    fi
-  fi
-}
 
 
 while [ 0 ]; do
   read log_line || notify_quit
 
+  echo "$log_line" | grep -E '^#' >/dev/null
+  if [ $? -eq 0 ]; then
+    msg=$(echo "$log_line" | sed -E 's|#msg (.+)|\1|g' | grep -v '#')
+    if [ -n "$msg" ]; then send_message "$msg" && echo "$msg"; fi
+    unset msg
+    continue
+  fi
+
   echo "$log_line" | grep "ERR: " >/dev/null
-  if ( [ $? -ne 0 ] && [ "$TERMUX_API" != "" ] ); then
+  if ( [ $? -ne 0 ] && [ -n "$TERMUX_API" ] ); then
 
     _status=$(echo "$log_line" | grep -Eo '[A-Z][a-z]+( [a-z]+)*ging')
     if [ $? -eq 0 ]; then status=$_status; fi
-    _percent=$(echo "$log_line" | grep -Eo '[-]{0,1}[0-9]+ %')
+    _percent=$(echo "$log_line" | grep -Eo '[0-9]+ %')
     if [ $? -eq 0 ]; then percent=$_percent; fi
-    _current=$(echo "$log_line" | grep -Eo '[-]{0,1}[0-9]+ mA')
+    _current=$(echo "$log_line" | grep 'mA')
     if [ $? -eq 0 ]; then current=$_current; fi
-    _voltage=$(echo "$log_line" | grep -Eo '[-]{0,1}[0-9]+ mV')
+    _voltage=$(echo "$log_line" | grep 'mV')
     if [ $? -eq 0 ]; then voltage=$_voltage; fi
-    _temp=$(echo "$log_line" | grep -Eo '[-]{0,1}[0-9]+ .C')
+    _temp=$(echo "$log_line" | grep '°C')
     if [ $? -eq 0 ]; then
       temp=$_temp
       notify_status
     fi
 
-  fi
+  elif [ -n "$TERMUX_API" ]; then send_message "$log_line"; fi
 
-  echo "$log_line" | grep -E '^# ' >/dev/null
-  if [ $? -eq 0 ]; then
-    :
-  else
-    echo "$log_line"
-  fi
+  echo "$log_line"
 done

@@ -21,6 +21,22 @@ JOBS_SKIP=2 # As demais tarefas conflitariam com a ação realizada,
             # portanto se faz necessário avançá-las.
 
 
+MDATA=$(stat -c '%Y' "$0")
+restart_on_upd_action () {
+  local mdata=$(stat -c '%Y' "$0")
+  if [ $? -ne 0 ]; then
+    :
+  elif [ $mdata -gt $MDATA ]; then
+    echo "#msg O serviço foi atualizado! reiniciando..."
+    if [ -x "$0" ]; then
+      exec "$0"
+    else
+      exec sh "$0"
+    fi
+  fi
+  return $JOBS_NEXT
+}
+
 # Exibe o status da bateria
 prev_percent=-1
 log_action () {
@@ -29,7 +45,7 @@ log_action () {
   # É necessário mostrar o status para atualizar a notificação do
   # Termux. Para sinalizar ao notify.sh que não deve salvar o status,
   # colocamos um hashtag e um espaço
-  elif [ "$TERMUX_API" != "" ]; then
+  elif [ -n "$TERMUX_API" ]; then
     battery_log '# '
   fi
   return $JOBS_NEXT
@@ -81,6 +97,8 @@ capacity_action () {
 
 # Executar todas as tarefas sequencialmente
 run_jobs () {
+  restart_on_upd_action
+
   log_action
 
   never_stop_action

@@ -38,7 +38,7 @@ discharge_to () {
     expr 3500000 + 7000 \* $p > tBWD/voltage_avg
     sleep 6
   done
-  echo -0 > tBWD/current_now
+  echo -1 > tBWD/current_now
   echo 500 > tBWD/current_avg
   echo "Concluído"
 }
