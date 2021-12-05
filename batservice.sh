@@ -27,29 +27,26 @@ if [ -z "$NO_PERMS" ]; then
 fi
 
 NAME="BatService"
-VERSION="2.0.211204"
+VERSION="2.0.211205 beta"
 
 
 . "$LIB/perms.sh"
-
-backup_owner "$PREFIX"
-mkdir -p "$DATA"
-restore_owner "$PREFIX/etc"
-restore_owner "$DATA"
-
 . "$LIB/error.sh"
 . "$LIB/config.sh"
 . "$LIB/battery.sh"
 . "$LIB/jobs.sh"
 
+if [ ! -d "$DATA" ]; then
+  backup_owner "$PREFIX"
+  mkdir -p "$DATA"
+  restore_owner "$PREFIX/etc"
+  restore_owner "$DATA"
+  if [ -r "$EXIT_FILE" ]; then rm "$EXIT_FILE"; fi
+fi
 
 echo "$NAME - conservação de bateria para o Galaxy A20"
 echo "Versão $VERSION"
 echo
-
-if [ -r "$EXIT_FILE" ]; then
-  rm "$EXIT_FILE"
-fi
 
 echo " -*- STATUS DA BATERIA -*- "
 echo " $(date) "

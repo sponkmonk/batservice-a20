@@ -15,37 +15,40 @@
 #    You should have received a copy of the GNU General Public License
 #    along with BatService.  If not, see <https://www.gnu.org/licenses/>.
 
-
-send_message () {
-  termux-toast "BatService: $1"
-}
-
+NO_SERVICE=1
 if [ -z "$NO_PERMS" ]; then
   . "$PREFIX/lib/batservice/env.rc"
 fi
 
-get_charging_never_stop () {
-  local val=$(cat "$DATA/config.txt" 2>/dev/null | grep 'charging-never-stop' | grep -Eo '(false|true)')
-  if [ "$val" = "" ]; then
-    return 2
-  elif [ "$val" = "true" ]; then
-    return 1
-  else
-    return 0
-  fi
+if [ -n "$DATA_FIX" ]; then
+  DATA="$DATA_FIX"
+  LIB="$LIB_FIX"
+fi
+
+NO_PERMS=1
+. "$LIB/perms.sh"
+. "$LIB/error.sh"
+. "$LIB/config.sh"
+
+send_message () {
+  if [ -z "$TERMUX_API" ]; then return 0; fi
+  termux-toast "BatService: $1"
 }
 
 send_status () {
-  get_charging_never_stop
-  if [ $? -eq 1 ]; then
+  if [ -z "$TERMUX_API" ]; then return 0; fi
+
+  local val=$(config_bool_get charging-never-stop)
+  if [ "$val" = "true" ]; then
     local btn="▶️"
   else
-    local btn="⏹"
+    local btn="⏸️"
   fi
+
   termux-notification -i batservice --ongoing --alert-once\
     --icon "battery_std" -t "Status do serviço" -c "$1"\
-    --button1 "$btn" --button1-action "DATA_FIX=\"$DATA\" sh $LIB/notify.sh force-charge"\
-    --button2 "❎" --button2-action "DATA_FIX=\"$DATA\" sh $LIB/notify.sh quit"
+    --button1 "$btn" --button1-action "DATA_FIX=\"$DATA\" LIB_FIX=\"$LIB\" sh $LIB/notify.sh force-charge"\
+    --button2 "❎" --button2-action "DATA_FIX=\"$DATA\" LIB_FIX=\"$LIB\" sh $LIB/notify.sh quit"
 }
 
 notify_status () {
@@ -59,51 +62,39 @@ notify_status () {
 }
 
 notify_quit () {
-  termux-notification-remove batservice
+  if [ -n "$TERMUX_API" ]; then
+    termux-notification-remove batservice
+  fi
   exit 0
 }
 
 
-if [ -z "$TERMUX_API" ]; then
-
-  unset send_message
-  unset send_status
-  unset notify_status
-  unset notify_quit
-
-  send_message () { :; }
-  send_status () { :; }
-  notify_status () { :; }
-  notify_quit() { exit 0; }
-
-fi
+if [ ! -d "$DATA" ]; then mkdir -p "$DATA"; fi
 
 if [ -n "$1" ]; then
-  if [ -n "$DATA_FIX" ]; then DATA="$DATA_FIX"; fi
 
   if [ "$1" = "--no-logs" ]; then
     NO_LOGS=1
   else case "$1" in
     quit)
-      echo 0 > "$DATA/exit.err"
+      echo 0 > "$EXIT_FILE"
       send_message "O serviço será encerrado"
       ;;
 
     force-charge)
 
-      get_charging_never_stop
-      ival=$?
-      val="true"
-      case "$ival" in
-        1)
-          sed -E -i 's|(charging-never-stop) .+|\1 false|g' "$DATA/config.txt"
+      val=$(config_bool_get charging-never-stop)
+      case "$val" in
+        true)
+          config_bool_set charging-never-stop false
           val="false"
           ;;
-        0)
-          sed -E -i 's|(charging-never-stop) .+|\1 true|g' "$DATA/config.txt"
+        false)
+          config_bool_set charging-never-stop true
           ;;
         *)
-          echo "charging-never-stop true" >> "$DATA/config.txt"
+          send_message "Não foi possível pausar o serviço!"
+          exit 1
           ;;
       esac
 
@@ -152,22 +143,37 @@ param_filter () {
   return 0
 }
 
-while [ 0 ]; do
-  read log_line || notify_quit
+while [ "$stdin" != "==============================" ]; do
+  read stdin || exit 0
+  echo $stdin
+done
 
-  echo "$log_line" | grep -E '^#' >/dev/null
+while [ 0 ]; do
+  read stdin || notify_quit
+  if [ "$stdin" = "==============================" ]; then break; fi
+
+  do_print=1
+  echo "$stdin" | grep -E '^#' >/dev/null
   if [ $? -eq 0 ]; then
-    msg=$(echo "$log_line" | sed -E 's|#msg (.+)|\1|g' | grep -v '#')
-    if [ -n "$msg" ]; then send_message "$msg" && echo "$msg"; fi
+    msg=$(echo "$stdin" | sed -E 's|#upd (.+)|\1|g' | grep -v '#')
+    if [ -n "$msg" ]; then
+      send_message "$msg"
+      echo "ATUALIZAÇÃO DO SERVIÇO: $msg"
+    fi
     unset msg
-    continue
+    do_print=0
   fi
 
-  echo "$log_line" | grep "ERR: " >/dev/null
+  echo "$stdin" | grep "ERR: " >/dev/null
   if ( [ $? -ne 0 ] && [ -n "$TERMUX_API" ] ); then
-    param_filter "$log_line"
+    param_filter "$stdin"
     if [ $? -eq 0 ]; then notify_status; fi
-  elif [ -n "$TERMUX_API" ]; then send_message "$log_line"; fi
+  elif [ -n "$TERMUX_API" ]; then send_message "$stdin"; fi
 
-  echo "$log_line"
+  if [ $do_print -eq 1 ]; then echo "$stdin"; fi
+done
+
+while [ 0 ]; do
+  echo "$stdin"
+  read stdin || exit 0
 done

@@ -27,7 +27,7 @@ restart_on_upd_action () {
   if [ $? -ne 0 ]; then
     :
   elif [ $mdata -gt $MDATA ]; then
-    echo "#msg O serviço foi atualizado! reiniciando..."
+    echo "#upd O serviço foi atualizado, reinicie o seu dispositivo para evitar erros."
     if [ -x "$0" ]; then
       exec "$0"
     else
