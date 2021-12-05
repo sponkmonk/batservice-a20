@@ -18,7 +18,7 @@
 #    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
-if [ "$NO_PERMS" = "" ]; then
+if [ -z "$NO_PERMS" ]; then
   . "$PREFIX/lib/batservice/env.rc"
   if [ $? -ne 0 ]; then
     echo "ERR: configuração inválida!"
@@ -26,8 +26,8 @@ if [ "$NO_PERMS" = "" ]; then
   fi
 fi
 
-Name="BatService"
-VERSION="2.0.211202"
+NAME="BatService"
+VERSION="2.0.211204"
 
 
 . "$LIB/perms.sh"
@@ -43,7 +43,7 @@ restore_owner "$DATA"
 . "$LIB/jobs.sh"
 
 
-echo "$Name - conservação de bateria para o Galaxy A20"
+echo "$NAME - conservação de bateria para o Galaxy A20"
 echo "Versão $VERSION"
 echo
 
@@ -53,7 +53,7 @@ fi
 
 echo " -*- STATUS DA BATERIA -*- "
 echo " $(date) "
-echo "  ============================="
+echo "=============================="
 
 
 while [ ! -r "$EXIT_FILE" ]; do
@@ -63,6 +63,8 @@ while [ ! -r "$EXIT_FILE" ]; do
   jobs_main
 
 done
+
+echo "=============================="
 
 battery_switch_set default
 rm "$EXIT_FILE"

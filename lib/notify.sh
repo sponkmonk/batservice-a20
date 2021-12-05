@@ -22,8 +22,6 @@ send_message () {
 
 if [ -z "$NO_PERMS" ]; then
   . "$PREFIX/lib/batservice/env.rc"
-else
-  echo "AVISO: botões não funcionam em ambiente de teste"
 fi
 
 get_charging_never_stop () {
@@ -46,8 +44,8 @@ send_status () {
   fi
   termux-notification -i batservice --ongoing --alert-once\
     --icon "battery_std" -t "Status do serviço" -c "$1"\
-    --button1 "$btn" --button1-action "$LIB/notify.sh force-charge"\
-    --button2 "❎" --button2-action "$LIB/notify.sh quit"
+    --button1 "$btn" --button1-action "DATA_FIX=\"$DATA\" sh $LIB/notify.sh force-charge"\
+    --button2 "❎" --button2-action "DATA_FIX=\"$DATA\" sh $LIB/notify.sh quit"
 }
 
 notify_status () {
@@ -81,6 +79,7 @@ if [ -z "$TERMUX_API" ]; then
 fi
 
 if [ -n "$1" ]; then
+  if [ -n "$DATA_FIX" ]; then DATA="$DATA_FIX"; fi
 
   if [ "$1" = "--no-logs" ]; then
     NO_LOGS=1
@@ -142,6 +141,17 @@ else
 fi
 
 
+param_filter () {
+  local p=$(echo "$1" | grep -Eo '[[:digit:]]+ %')
+  if [ -z "$p" ]; then return 1; fi
+  percent=$p
+  status=$(echo "$1" | grep -Eo '\([[:alpha:] ]+\)')
+  current=$(echo "$1" | grep -Eo '[[:digit:]]+ mA')
+  voltage=$(echo "$1" | grep -Eo '[[:digit:]]+ mV')
+  temp=$(echo "$1" | grep -Eo '[[:digit:]]+ .C')
+  return 0
+}
+
 while [ 0 ]; do
   read log_line || notify_quit
 
@@ -155,21 +165,8 @@ while [ 0 ]; do
 
   echo "$log_line" | grep "ERR: " >/dev/null
   if ( [ $? -ne 0 ] && [ -n "$TERMUX_API" ] ); then
-
-    _status=$(echo "$log_line" | grep -Eo '[A-Z][a-z]+( [a-z]+)*ging')
-    if [ $? -eq 0 ]; then status=$_status; fi
-    _percent=$(echo "$log_line" | grep -Eo '[0-9]+ %')
-    if [ $? -eq 0 ]; then percent=$_percent; fi
-    _current=$(echo "$log_line" | grep 'mA')
-    if [ $? -eq 0 ]; then current=$_current; fi
-    _voltage=$(echo "$log_line" | grep 'mV')
-    if [ $? -eq 0 ]; then voltage=$_voltage; fi
-    _temp=$(echo "$log_line" | grep '°C')
-    if [ $? -eq 0 ]; then
-      temp=$_temp
-      notify_status
-    fi
-
+    param_filter "$log_line"
+    if [ $? -eq 0 ]; then notify_status; fi
   elif [ -n "$TERMUX_API" ]; then send_message "$log_line"; fi
 
   echo "$log_line"

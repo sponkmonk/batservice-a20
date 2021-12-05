@@ -17,6 +17,8 @@
 EXIT_FILE="$DATA/exit.err"
 # Se o programa encerra de forma inesperada, esse arquivo pode conter um dos códigos de erros das variáveis E_*.
 
+printf BatService > /proc/$$/comm
+exec< /dev/null
 exec 2>&1
 
 error () {

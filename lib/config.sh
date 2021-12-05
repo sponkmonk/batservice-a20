@@ -16,7 +16,7 @@
 CONFIG="$DATA/config.txt"
 
 config_number_get () {
-  cat $CONFIG | grep $1 | grep -Eo '[0-9]+'
+  cat $CONFIG | grep $1 | grep -Eo '[[:digit:]]'
 }
 
 config_bool_get () {
