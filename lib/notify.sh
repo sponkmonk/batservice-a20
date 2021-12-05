@@ -175,5 +175,5 @@ done
 
 while [ 0 ]; do
   echo "$stdin"
-  read stdin || exit 0
+  read stdin || notify_quit
 done

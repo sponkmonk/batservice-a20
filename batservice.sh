@@ -20,10 +20,6 @@
 
 if [ -z "$NO_PERMS" ]; then
   . "$PREFIX/lib/batservice/env.rc"
-  if [ $? -ne 0 ]; then
-    echo "ERR: configuração inválida!"
-    exit 1
-  fi
 fi
 
 NAME="BatService"
