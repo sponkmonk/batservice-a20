@@ -14,10 +14,6 @@
 #    along with BatService.  If not, see <https://www.gnu.org/licenses/>.
 
 
-if [ "$BWD" = "" ]; then
-  BWD="/sys/class/power_supply/battery"
-fi
-
 Bpercent="${BWD}/capacity"
 Bvoltage="${BWD}/voltage_avg"
 Bstatus="${BWD}/status"
@@ -53,15 +49,19 @@ battery_switch_set () {
       ;;
     enable)
       mode=$ENABLED
+      echo "ATIVAR carregamento"
       ;;
     disable)
       mode=$DISABLED
+      echo "DESATIVAR carregamento"
       ;;
     default)
       mode=$DEFAULT
+      echo "RECUPERAR estado de carga"
       ;;
     *)
-      exit $E_WROPTION
+      printerr "Opção '$1' desconhecida!"
+      error $E_WROPTION
       ;;
   esac
 
@@ -73,6 +73,7 @@ battery_switch_set () {
     result=$(cat "$Bswitch")
     if [ $result -ne $mode ]; then
       echo $DEFAULT > "$Bswitch"
+      printerr "Impossível checar estado do controlador!"
       error $E_FASWITCH
     fi
 
@@ -80,6 +81,7 @@ battery_switch_set () {
       battery_status
       if [ "$status" = "Charging" ]; then
         echo $DEFAULT > "$Bswitch"
+        printerr "Controlador de carga INVÁLIDO!"
         error $E_WRSWITCH
       fi
     fi
@@ -125,18 +127,34 @@ battery_voltage () {
   voltage=$(expr $voltage / 1000)
 }
 
+# Atualiza todas as variáveis
+battery_status_all () {
+  battery_switch_set get
+  battery_percent
+  battery_status
+  battery_current
+  battery_temp
+  battery_voltage
+}
+
 
 # depende de chamadas às funções anteriores
 battery_log () {
-  echo "$percent % ($status)"
-  echo "$current mA"
-  echo "$voltage mV"
-  echo "$temp °C"
+  local statustxt="$1$percent % ($status)"
+  if [ -n "$TERMUX_API" ]; then
+    : # current por padrão já é o current_avg
+  else
+    current=$current_avg
+  fi
+  statustxt="$statustxt $current mA $voltage mV $temp °C"
+  echo "$statustxt"
 
   hstatus="ATIVADO"
+  battery_switch_set get
   if [ $switch_status -ne $ENABLED ]; then
     hstatus="DESATIVADO"
   fi
-  echo "Interruptor de carga: $hstatus"
-  echo
+  echo "${1}Interruptor de carga: $hstatus"
+
+  if [ -z "$1" ]; then echo; fi
 }

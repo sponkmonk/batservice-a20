@@ -16,20 +16,20 @@
 
 backup_owner () {
   # Em testes, podemos ignorar isto
-  if [ "$NO_SERVICE" != "" ]; then return 0; fi
+  if [ -n "$NO_PERMS" ]; then return 0; fi
   user=$(stat -c "%U" "$1")
   group=$(stat -c "%G" "$1")
   modes=$(stat -c "%a" "$1")
 }
 
 restore_owner () {
-  if [ "$NO_SERVICE" != "" ]; then return 0; fi
+  if [ -n "$NO_PERMS" ]; then return 0; fi
   chown $user:$group "$1"
   chmod $modes "$1"
 }
 
 restore_owner_r () {
-  if [ "$NO_SERVICE" != "" ]; then return 0; fi
+  if [ -n "$NO_PERMS" ]; then return 0; fi
   chown -R $user:$group "$1"
   chmod -R $modes "$1"
 }

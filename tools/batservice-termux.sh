@@ -15,4 +15,4 @@
 #    You should have received a copy of the GNU General Public License
 #    along with BatService.  If not, see <https://www.gnu.org/licenses/>.
 
-su -c "$PREFIX/bin/batservice.sh"
+su -c "$PREFIX/bin/batservice.sh" | $PREFIX/lib/batservice/notify.sh
