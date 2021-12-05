@@ -89,12 +89,9 @@ if [ -n "$1" ]; then
           config_bool_set charging-never-stop false
           val="false"
           ;;
-        false)
+        false|"")
           config_bool_set charging-never-stop true
-          ;;
-        *)
-          send_message "Não foi possível pausar o serviço!"
-          exit 1
+          val="true"
           ;;
       esac
 
