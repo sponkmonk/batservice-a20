@@ -1,8 +1,10 @@
 BATSERVICE
 
-É um simples programa para o Galaxy A20, para aplicativo de terminal (com root!), que conserva a bateria entre 45 e 50 %, o que possibilita usar um "power bank" como se este fosse a própria bateria do dispositivo, prolongando bastante a vida útil da bateria interna do dispositivo.
+É um simples programa para o Galaxy A20 (com root!) com o Termux, que conserva a bateria entre 45 e 50 %, o que possibilita usar um "power bank" como se este fosse a própria bateria do dispositivo, prolongando bastante a vida útil da bateria interna do dispositivo.
 
 Isto funciona com praticamente todo carregador capaz de entregar a potência necessária para usar o Galaxy A20, isto é, qualquer fonte com potência igual ou maior que 5 W.
+
+NOTE: se você não sabe usar shell, instale a versão do Magisk!
 
 
 0. ANULAÇÃO DE GARANTIAS
@@ -10,72 +12,74 @@ Isto funciona com praticamente todo carregador capaz de entregar a potência nec
 Este programa vem com ABSOLUTAMENTE NENHUMA GARANTIA.
 Este é um software livre, e você pode redistribuí-lo sob certas condições; leia o arquivo COPYING para detalhes.
 
-Testei apenas no modelo referido. Se o kernel do seu Android não possuir o arquivo de controle de carga específico (1: veja a variável "Bswitch" no código fonte deste programa), ou o seu dispositivo não está rooteado, o BatService não funcionará.
+Testei apenas no modelo referido. Se o kernel do seu Android não possuir o arquivo de controle de carga específico (veja a variável "Bswitch" no código fonte deste programa), ou o seu dispositivo não está rooteado, o BatService não funcionará.
 
 
 1. INSTALANDO
 
-No aplicativo de terminal, copie os arquivos para o diretório 'inicial' do aplicativo ("/data/data/URI_DO_TERMINAL/files/").
+Com o Termux instalado via F-Droid, e com a permissão de "Memória", abra-o e mova este pacote para ele. Pode ser necessário instalar o comando 'unzip' antes de extrair o pacote. Para isto:
+    $ apt install unzip -y
 
-Por exemplo, se os arquivos estiverem em "/sdcard/Documents/batservice", você pode copiar para o Termux com o seguinte comando:
-  $ cp -r /sdcard/Documents/batservice ~/batservice
+Exemplo:
+    $ mkdir tmp && cd tmp
+    $ mv /sdcard/Download/BatService-A20-Termux-v2.*.zip ./
+    $ unzip BatService-A20-Termux-v2.*.zip
+    $ chmod +x install.sh && ./install.sh
+    $ su -c "echo Ok" # Faça que o seu gerenciador de root LEMBRE desta permissão
 
-Dê permissões de execução:
-  $ cd ~/batservice
-  $ chmod +x install.sh && chmod +x remove.sh
+É necessário instalar e executar o app Termux:Boot ao menos uma vez. Se fez isso após a instalação do BatService, repita o último comando.
 
-E então instale:
-  $ ./install.sh
-
-Uma solicitação de root pode aparecer. Neste caso, faça o gerenciador de super usuário memorizar a permissão ou seja incomodado por ele toda vez que o Android iniciar -- e caso o serviço não funcione, não é problema com o BatService, pois o gerenciador pode negar as solicitações de forma silenciosa durante a inicialização do sistema.
-
-Instale também a extensão Termux:Boot, se ainda não fez isso. Desative a otimização de bateria para ambos os apps (Termux e Termux:Boot) e execute o Termux:Boot para o sistema Android inicializar o BatService. [Use os apps disponíveis via F-Droid!]
-
-Com a bateria acima de 50 %, pode atrasar 1 minuto para o script desativar o carregamento da bateria. Você pode checar isso pela corrente em mA, que pode variar em até |10| mA. Caso ainda esteja carregando, encerre e desinstale o programa com as instruções nas seções abaixo.
+Existe um script de desinstalação no pacote, portanto não recomendo apagar.
 
 
-2. COMO ENCERRAR O SCRIPT
+2. CONFIGURAÇÕES
 
-O ideal é criar um arquivo nomeado "batservice.exit" no diretório padrão "/sdcard". Até 1 minuto, o programa identifica o arquivo, remove e encerra. Este método chato é recomendado pois o script recupera automaticamente a configuração anterior a ele, o que significa que seu smartphone vai carregar acima de 50% novamente.
+O formato do arquivo de configuração a ser salvo em "$PREFIX/etc/batservice/config.txt" é simples como este exemplo:
+    charging-never-stop false
+    charging-stop 50
+    charging-continue 45
+    service-delay-not-charging 60
 
+Nenhuma configuração é obrigatória*, mas o arquivo deve terminar com uma linha vazia se for manipulado manualmente.
 
-3. PARA DESINSTALAR
+Existem restrições para os valores suportados:
+    cn: charging-never-stop       | true, false
+    cc: charging-continue         | 15 <= cc < cs
+    cs: charging-stop             | cc < cs <= 100
+    sd: service-delay-not-charging| 6 <= sd <= 60
 
-De volta aos arquivos de instalação (você só precisa manter remove.sh após a instalação!)
-  $ ./remove.sh
+(*) cc depende de cs, portanto não é possível inserir apenas um!
 
-Root pode ser necessário.
-
-Remova também o relatório do BatService, caso não vá usar futuramente:
-  $ rm -r ~/.cache/BatService
-
-
-4. ALTERANDO PERCENTUAIS
-
-Os valores padrões são ótimos para a conservação da vida útil da bateria, segundo os estudos disponíveis em Battery University¹.
-
-Mas você pode definir quaisquer limites entre 15 e 100% passando esses valores como argumentos para o programa:
-  # ./batservice.sh [MÍNIMO] [MÁXIMO]
-
-Entretanto, se estiver instalado o serviço conforme a seção (1), você deve adicionar os parâmetros no arquivo em ".termux/boot/batservice-boot.sh".
-
-Reinicie o sistema Android para os novos valores terem efeito.
+NOTE: as abreviações (cc, cs etc.) são apenas para facilitar a leitura. O serviço não interpreta isso!
 
 
-5. TESTANDO/ALTERANDO CÓDIGO
+3. NOTIFICAÇÕES
 
-Você deve criar uma cópia dos arquivos presentes no endereço "/sys/class/power_supply/battery" em "qualquer/endereço". Para isso, defina a variável de ambiente BWD com esse endereço:
-  $ export BWD="qualquer/endereço"
+O BatService suporta notificações através da API do Termux. Basta instalar esta extensão seguindo o guia oficial. Como deve imaginar: use a versão de Termux:API do F-Droid! em seguida, instale o pacote necessário.
 
-Se estiver no Linux, exporte também o endereço para os arquivos de configuração e erro:
-  $ export DATA="qualquer/outro/endereço"
+Acesse [https://wiki.termux.com/wiki/Termux:API] para detalhes.
 
-Também exporte a seguinte variável para que o script mostre mensagens/erros na tela em vez de salvar num arquivo de registro:
-  $ export NO_SERVICE=1
 
-Desta forma, é possível executar o script em modo de usuário sem causar alterações nos arquivos de sistema.
+4. DESINSTALANDO
 
-NOTA: no código fonte disponível no GitHub, há um diretório 'test' com todos os arquivos prontos para uso.
+Não precisa encerrar o serviço!
+
+Vá para o diretório do pacote instalado e execute o comando ./remove.sh:
+    $ cd tmp
+    $ chmod +x remove.sh && ./remove.sh
+
+
+5. PAUSANDO O SERVIÇO PARA CARGA COMPLETA
+
+Se você instalou a API, use o botão (⏸️).
+
+Caso contrário, execute o seguinte comando em uma sessão do terminal:
+    $ $PREFIX/lib/batservice/notify.sh force-charge
+
+Para desfazer a configuração/continuar o serviço, basta repetir o mesmo procedimento.
+
+Se a carga da CPU usada pelo serviço é muito importante:
+    $ $PREFIX/lib/batservice/notify.sh quit # Este comando encerra o serviço de fato.
 
 
 PROBLEMAS?
@@ -85,6 +89,6 @@ Você deve entrar em contato comigo pela rede social Mastodon. Recebo muito spam
 Mastodon: @cledson_cavalcanti@mastodon.technology
 
 
-[1] https://batteryuniversity.com/article/bu-808-how-to-prolong-lithium-based-batteries
+Referência: https://batteryuniversity.com/article/bu-808-how-to-prolong-lithium-based-batteries
 
 by cleds.upper
