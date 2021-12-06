@@ -44,7 +44,7 @@ send_status () {
   fi
 
   if [ -z "$TERMUX_API" ]; then
-    if [ -n "$NO_LOGS" ]; then echo "$1"; fi
+    if [ -n "$NO_LOGS" ]; then echo "STATUS DO SERVIÇO: $1"; fi
   else
     termux-notification -i batservice --ongoing --alert-once\
       --icon "battery_std" -t "Status do serviço" -c "$1"\
@@ -55,11 +55,11 @@ send_status () {
 
 notify_status () {
   if echo "$status" | grep -E '(Charging|Not charging)' >/dev/null; then
-    p="(🔌 $current)"
+    local p="(🔌 $current)"
   else
-    p=""
+    local p=""
   fi
-  statustxt="🔋 $percent $p ⚡ $voltage 🌡 $temp"
+  local statustxt="🔋 $percent $p ⚡ $voltage 🌡 $temp"
   send_status "$statustxt"
 }
 
@@ -132,13 +132,13 @@ fi
 
 
 param_filter () {
-  local p=$(echo "$1" | grep -Eo '(-)?[[:digit:]]+ %')
+  local p="$(echo \"$1\" | grep -Eo '(-)?[[:digit:]]+ %')"
   if [ -z "$p" ]; then return 1; fi
-  percent=$p
-  status=$(echo "$1" | grep -Eo '\([[:alpha:] ]+\)')
-  current=$(echo "$1" | grep -Eo '(-)?[[:digit:]]+ mA')
-  voltage=$(echo "$1" | grep -Eo '(-)?[[:digit:]]+ mV')
-  temp=$(echo "$1" | grep -Eo '(-)?[[:digit:]]+ .C')
+  percent="$p"
+  status="$(echo \"$1\" | grep -Eo '\([[:alpha:] ]+\)')"
+  current="$(echo \"$1\" | grep -Eo '(-)?[[:digit:]]+ mA')"
+  voltage="$(echo \"$1\" | grep -Eo '(-)?[[:digit:]]+ mV')"
+  temp="$(echo \"$1\" | grep -Eo '(-)?[[:digit:]]+ .C')"
   return 0
 }
 
