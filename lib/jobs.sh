@@ -28,6 +28,7 @@ restart_on_upd_action () {
     :
   elif [ $mdata -gt $MDATA ]; then
     echo "#upd O serviço foi atualizado, reinicie o seu dispositivo para evitar erros."
+    MDATA=$mdata
   fi
   return $JOBS_NEXT
 }

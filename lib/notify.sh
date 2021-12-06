@@ -130,13 +130,13 @@ fi
 
 
 param_filter () {
-  local p=$(echo "$1" | grep -Eo '[[:digit:]]+ %')
+  local p=$(echo "$1" | grep -Eo '(-)?[[:digit:]]+ %')
   if [ -z "$p" ]; then return 1; fi
   percent=$p
   status=$(echo "$1" | grep -Eo '\([[:alpha:] ]+\)')
-  current=$(echo "$1" | grep -Eo '[[:digit:]]+ mA')
-  voltage=$(echo "$1" | grep -Eo '[[:digit:]]+ mV')
-  temp=$(echo "$1" | grep -Eo '[[:digit:]]+ .C')
+  current=$(echo "$1" | grep -Eo '(-)?[[:digit:]]+ mA')
+  voltage=$(echo "$1" | grep -Eo '(-)?[[:digit:]]+ mV')
+  temp=$(echo "$1" | grep -Eo '(-)?[[:digit:]]+ .C')
   return 0
 }
 
