@@ -36,8 +36,6 @@ send_message () {
 }
 
 send_status () {
-  if [ -z "$TERMUX_API" ]; then return 0; fi
-
   local val=$(config_bool_get charging-never-stop)
   if [ "$val" = "true" ]; then
     local btn="▶️"
@@ -45,10 +43,14 @@ send_status () {
     local btn="⏸️"
   fi
 
-  termux-notification -i batservice --ongoing --alert-once\
-    --icon "battery_std" -t "Status do serviço" -c "$1"\
-    --button1 "$btn" --button1-action "DATA_FIX=\"$DATA\" LIB_FIX=\"$LIB\" sh $LIB/notify.sh force-charge"\
-    --button2 "❎" --button2-action "DATA_FIX=\"$DATA\" LIB_FIX=\"$LIB\" sh $LIB/notify.sh quit"
+  if [ -z "$TERMUX_API" ]; then
+    if [ -n "$NO_LOGS" ]; then echo "$1"; fi
+  else
+    termux-notification -i batservice --ongoing --alert-once\
+      --icon "battery_std" -t "Status do serviço" -c "$1"\
+      --button1 "$btn" --button1-action "DATA_FIX=\"$DATA\" LIB_FIX=\"$LIB\" sh $LIB/notify.sh force-charge"\
+      --button2 "❎" --button2-action "DATA_FIX=\"$DATA\" LIB_FIX=\"$LIB\" sh $LIB/notify.sh quit"
+  fi
 }
 
 notify_status () {
@@ -162,10 +164,10 @@ while [ 0 ]; do
   fi
 
   echo "$stdin" | grep "ERR: " >/dev/null
-  if ( [ $? -ne 0 ] && [ -n "$TERMUX_API" ] ); then
+  if [ $? -ne 0 ]; then
     param_filter "$stdin"
     if [ $? -eq 0 ]; then notify_status; fi
-  elif [ -n "$TERMUX_API" ]; then send_message "$stdin"; fi
+  else send_message "$stdin"; fi
 
   if [ $do_print -eq 1 ]; then echo "$stdin"; fi
 done
