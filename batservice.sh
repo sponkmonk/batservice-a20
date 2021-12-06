@@ -23,7 +23,7 @@ if [ -z "$NO_PERMS" ]; then
 fi
 
 NAME="BatService"
-VERSION="2.0.211205 beta"
+VERSION="2.0.211206 beta"
 
 
 . "$LIB/perms.sh"
