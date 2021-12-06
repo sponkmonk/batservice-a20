@@ -45,7 +45,6 @@ echo "Versão $VERSION"
 echo
 
 echo " -*- STATUS DA BATERIA -*- "
-echo " $(date) "
 echo "=============================="
 
 

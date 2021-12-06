@@ -146,6 +146,8 @@ battery_log () {
     current=$current_now
   fi
   statustxt="$statustxt $current mA $voltage mV $temp °C"
+
+  echo "${1}DATA:" $(date +"%d/%m/%Y %Hh%M")
   echo "$statustxt"
 
   hstatus="ATIVADO"
