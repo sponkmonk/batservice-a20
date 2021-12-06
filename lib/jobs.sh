@@ -38,7 +38,6 @@ restart_on_upd_action () {
 }
 
 # Exibe o status da bateria
-prev_percent=-1
 log_action () {
   if [ $prev_percent -ne $percent ]; then
     battery_log
@@ -48,6 +47,7 @@ log_action () {
   elif [ -n "$TERMUX_API" ]; then
     battery_log '# '
   fi
+  prev_percent=$percent
   return $JOBS_NEXT
 }
 
@@ -112,6 +112,7 @@ run_jobs () {
   return 0
 }
 
+prev_percent=-1
 jobs_main () {
   battery_status_all
   run_jobs

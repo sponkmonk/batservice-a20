@@ -141,16 +141,14 @@ battery_status_all () {
 # depende de chamadas às funções anteriores
 battery_log () {
   local statustxt="$1$percent % ($status)"
-  if [ -n "$TERMUX_API" ]; then
-    : # current por padrão já é o current_avg
-  else
-    current=$current_avg
+  if [ -n "$1" ]; then
+    # current é o current_now
+    current=$current_now
   fi
   statustxt="$statustxt $current mA $voltage mV $temp °C"
   echo "$statustxt"
 
   hstatus="ATIVADO"
-  battery_switch_set get
   if [ $switch_status -ne $ENABLED ]; then
     hstatus="DESATIVADO"
   fi
