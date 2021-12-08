@@ -20,9 +20,17 @@ JOBS_OK=1   # Ação exige um avanço imediato no loop de eventos.
 JOBS_SKIP=2 # As demais tarefas conflitariam com a ação realizada,
             # portanto se faz necessário avançá-las.
 
+if [ -r "$DATA/user-jobs.sh" ]; then
+  . "$DATA/user-jobs.sh"
+else
+  user_jobs_pre () { :; }
+  user_jobs_highest () { return 0 }
+  user_jobs_lowest () { return 0 }
+fi
+
 
 MDATA=$(stat -c '%Y' "$0")
-restart_on_upd_action () {
+srv_upd_action () {
   local mdata=$(stat -c '%Y' "$0")
   if [ $? -ne 0 ]; then
     :
@@ -93,9 +101,17 @@ capacity_action () {
 
 # Executar todas as tarefas sequencialmente
 run_jobs () {
-  restart_on_upd_action
+  local r
+  srv_upd_action
+
+  user_jobs_pre
 
   log_action
+
+  user_jobs_highest
+  r=$?
+  if [ $r -eq $JOBS_OK ]; then return 1; fi
+  if [ $r -eq $JOBS_SKIP ]; then return 0; fi
 
   never_stop_action
   r=$?
@@ -104,6 +120,10 @@ run_jobs () {
 
   capacity_action
   if [ $? -eq $JOBS_OK ]; then return 1; fi
+
+  user_jobs_lowest
+  r=$?
+  if [ $r -eq $JOBS_OK ]; then return 1; fi
 
   return 0
 }

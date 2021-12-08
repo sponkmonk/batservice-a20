@@ -14,6 +14,12 @@
 #    along with BatService.  If not, see <https://www.gnu.org/licenses/>.
 
 
+if [ -r "$DATA/user-configs" ]; then
+  . "$DATA/user-configs.sh"
+else
+  user_configs () { :; }
+fi
+
 CONFIG="$DATA/config.txt"
 
 config_valid_param () {
@@ -72,6 +78,26 @@ config_bool_set () {
   sed -Ei "s/($1) (true|false)/\1 $2/g" "$CONFIG"
 }
 
+config_string_get () {
+  if [ -r "$CONFIG" ]; then
+    cat "$CONFIG" | grep $1 | sed -E "s/$1 (.+)/\1/g"
+    return 0
+  fi
+  return 1
+}
+
+# Strings multilinha não são suportadas
+config_string_set () {
+  config_valid_param $1
+
+  local val="$(config_string_get $1)"
+  if [ -z "$val" ]; then
+    echo $1 "$2" >> "$CONFIG"
+    return $?
+  fi
+  sed -Ei "s/($1) .+/\1 $2/g" "$CONFIG"
+}
+
 
 MIN_PERCENT=45
 MAX_PERCENT=50
@@ -88,12 +114,15 @@ config_update=0
 
 config_refresh () {
   if [ -r "$CONFIG" ]; then
-    changed=$(stat -c "%Y" "$CONFIG")
+    local changed=$(stat -c "%Y" "$CONFIG")
     if [ $changed -le $config_update ]; then
       return 0
     fi
 
     config_update=$changed
+
+    local min
+    local max
     min=$(config_number_get charging-continue)
     max=$(config_number_get charging-stop)
 
@@ -107,9 +136,7 @@ config_refresh () {
       MAX_PERCENT=$max
     fi
 
-    unset min
-    unset max
-
+    local delay
     delay=$(config_number_get service-delay-not-charging)
     if [ -z "$delay" ]; then
       :
@@ -119,8 +146,7 @@ config_refresh () {
       DELAY_REFRESH=$delay
     fi
 
-    unset delay
-
+    local never_stop
     never_stop=$(config_bool_get charging-never-stop)
     if [ -z "$never_stop" ]; then
       :
@@ -128,6 +154,6 @@ config_refresh () {
       NEVER_STOP="$never_stop"
     fi
 
-    unset never_stop
+    user_configs
   fi
 }
