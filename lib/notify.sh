@@ -38,18 +38,18 @@ send_message () {
 send_status () {
   local val=$(config_bool_get charging-never-stop)
   if [ "$val" = "true" ]; then
-    local btn="▶️"
+    local btn="ᐅ"
   else
-    local btn="⏸️"
+    local btn="□"
   fi
 
   if [ -z "$TERMUX_API" ]; then
-    if [ -n "$NO_LOGS" ]; then echo "STATUS DO SERVIÇO: $1"; fi
+    if [ -n "$NO_LOGS" ]; then echo "STATUS: $1"; fi
   else
     termux-notification -i batservice --ongoing --alert-once\
       --icon "battery_std" -t "Status do serviço" -c "$1"\
       --button1 "$btn" --button1-action "DATA_FIX=\"$DATA\" LIB_FIX=\"$LIB\" sh $LIB/notify.sh force-charge"\
-      --button2 "❎" --button2-action "DATA_FIX=\"$DATA\" LIB_FIX=\"$LIB\" sh $LIB/notify.sh quit"
+      --button2 "X" --button2-action "DATA_FIX=\"$DATA\" LIB_FIX=\"$LIB\" sh $LIB/notify.sh quit"
   fi
 }
 
@@ -157,7 +157,7 @@ while [ 0 ]; do
     msg=$(echo "$stdin" | sed -E 's|#upd (.+)|\1|g' | grep -v '#')
     if [ -n "$msg" ]; then
       send_message "$msg"
-      echo "ATUALIZAÇÃO DO SERVIÇO: $msg"
+      echo "ALERTA: $msg"
     fi
     unset msg
     do_print=0
