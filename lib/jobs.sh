@@ -24,8 +24,8 @@ if [ -r "$DATA/user-jobs.sh" ]; then
   . "$DATA/user-jobs.sh"
 else
   user_jobs_pre () { :; }
-  user_jobs_highest () { return 0 }
-  user_jobs_lowest () { return 0 }
+  user_jobs_highest () { return 0; }
+  user_jobs_lowest () { return 0; }
 fi
 
 
