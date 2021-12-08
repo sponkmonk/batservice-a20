@@ -11,6 +11,7 @@
 #   my_null_action
 #   r=$?
 #   if [ $r -ne $JOBS_NEXT ]; then return $r; fi
+#   return $r
 # }
 
 
