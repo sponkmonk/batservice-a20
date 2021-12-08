@@ -43,7 +43,7 @@ srv_upd_action () {
 
 # Exibe o status da bateria
 log_action () {
-  if [ $prev_percent -ne $percent ]; then
+  if [ $_prev_percent -ne $percent ]; then
     battery_log
   # É necessário mostrar o status para atualizar a notificação do
   # Termux. Para sinalizar ao notify.sh que não deve salvar o status,
@@ -51,7 +51,7 @@ log_action () {
   elif [ -n "$TERMUX_API" ]; then
     battery_log '# '
   fi
-  prev_percent=$percent
+  _prev_percent=$percent
   return $JOBS_NEXT
 }
 
@@ -62,7 +62,7 @@ not_charging_set=$DISABLED
 
 # Verifica se o BatService deve permitir o carregamento completo
 never_stop_action () {
-  if [ "$NEVER_STOP" = "true" ]; then
+  if [ "$CHARGE_NEVER_STOP" = "true" ]; then
 
     if [ $not_charging_set -eq $ENABLED ]; then
       battery_switch_set enable
@@ -78,9 +78,10 @@ never_stop_action () {
 
 # Verifica se a carga ultrapassou o limite definido na configuração
 capacity_action () {
+  # Se a bateria está descarregando ou parada
   if echo "$status" | grep -o 'charging' >/dev/null; then
 
-    if ( [ $not_charging_set -eq $ENABLED ] && [ $percent -lt $MIN_PERCENT ] ); then
+    if [ $not_charging_set -eq $ENABLED ] && [ $percent -lt $CHARGE_CONTINUE ]; then
       battery_switch_set enable
       not_charging_set=$DISABLED
       return $JOBS_OK
@@ -88,7 +89,7 @@ capacity_action () {
 
   elif [ "$status" = "Charging" ]; then
 
-    if ( [ $not_charging_set -eq $ENABLED ] || [ $percent -ge $MAX_PERCENT ] ); then
+    if [ $not_charging_set -eq $ENABLED ] || [ $percent -ge $CHARGE_STOP ]; then
       battery_switch_set disable
       not_charging_set=$ENABLED
       return $JOBS_OK
@@ -128,15 +129,18 @@ run_jobs () {
   return 0
 }
 
-prev_percent=-1
+_prev_percent=-1
 jobs_main () {
   battery_status_all
   run_jobs
-  if [ $? -eq 1 ]; then prev_percent=-1 && return 0; fi
+  if [ $? -eq 1 ]; then
+    _prev_percent=-1
+    return 0
+  fi
 
-  prev_percent=$percent
+  _prev_percent=$percent
   if echo "$status" | grep -o 'charging' >/dev/null; then
-    sleep $DELAY_REFRESH
+    sleep $SRV_DELAY
   else
     sleep 6
   fi

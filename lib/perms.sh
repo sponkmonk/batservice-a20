@@ -14,22 +14,22 @@
 #    along with BatService.  If not, see <https://www.gnu.org/licenses/>.
 
 
-backup_owner () {
+perms_backup () {
   # Em testes, podemos ignorar isto
   if [ -n "$NO_PERMS" ]; then return 0; fi
-  user=$(stat -c "%U" "$1")
-  group=$(stat -c "%G" "$1")
-  modes=$(stat -c "%a" "$1")
+  _perms_user=$(stat -c "%U" "$1")
+  _perms_group=$(stat -c "%G" "$1")
+  _perms_modes=$(stat -c "%a" "$1")
 }
 
-restore_owner () {
+perms_restore () {
   if [ -n "$NO_PERMS" ]; then return 0; fi
-  chown $user:$group "$1"
-  chmod $modes "$1"
+  chown $_perms_user:$_perms_group "$1"
+  chmod $_perms_modes "$1"
 }
 
-restore_owner_r () {
+perms_restore_r () {
   if [ -n "$NO_PERMS" ]; then return 0; fi
-  chown -R $user:$group "$1"
-  chmod -R $modes "$1"
+  chown -R $_perms_user:$_perms_group "$1"
+  chmod -R $_perms_modes "$1"
 }

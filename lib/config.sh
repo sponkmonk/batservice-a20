@@ -20,7 +20,7 @@ else
   user_configs () { :; }
 fi
 
-CONFIG="$DATA/config.txt"
+CONFIG_FILE="$DATA/config.txt"
 
 config_valid_param () {
   if echo $1 | grep -Ev '^[[:alpha:]\-]+$' >/dev/null; then
@@ -30,8 +30,8 @@ config_valid_param () {
 }
 
 config_number_get () {
-  if [ -r "$CONFIG" ]; then
-    cat "$CONFIG" | grep $1 | grep -Eo '[[:digit:]]+'
+  if [ -r "$CONFIG_FILE" ]; then
+    cat "$CONFIG_FILE" | grep $1 | grep -Eo '[[:digit:]]+'
     return 0
   fi
   return 1
@@ -47,16 +47,16 @@ config_number_set () {
 
   local val=$(config_number_get $1)
   if [ -z "$val" ]; then
-    echo $1 $2 >> "$CONFIG"
+    echo $1 $2 >> "$CONFIG_FILE"
     return $?
   fi
-  sed -Ei "s|($1) [[:digit:]]+|\1 $2|g" "$CONFIG"
+  sed -Ei "s|($1) [[:digit:]]+|\1 $2|g" "$CONFIG_FILE"
   return $?
 }
 
 config_bool_get () {
-  if [ -r "$CONFIG" ]; then
-    cat "$CONFIG" | grep $1 | grep -Eo '(true|false)'
+  if [ -r "$CONFIG_FILE" ]; then
+    cat "$CONFIG_FILE" | grep $1 | grep -Eo '(true|false)'
     return 0
   fi
   return 1
@@ -72,15 +72,15 @@ config_bool_set () {
 
   local val=$(config_bool_get $1)
   if [ -z "$val" ]; then
-    echo $1 $2 >> "$CONFIG"
+    echo $1 $2 >> "$CONFIG_FILE"
     return $?
   fi
-  sed -Ei "s/($1) (true|false)/\1 $2/g" "$CONFIG"
+  sed -Ei "s/($1) (true|false)/\1 $2/g" "$CONFIG_FILE"
 }
 
 config_string_get () {
-  if [ -r "$CONFIG" ]; then
-    cat "$CONFIG" | grep $1 | sed -E "s/$1 (.+)/\1/g"
+  if [ -r "$CONFIG_FILE" ]; then
+    cat "$CONFIG_FILE" | grep $1 | sed -E "s/$1 (.+)/\1/g"
     return 0
   fi
   return 1
@@ -92,58 +92,57 @@ config_string_set () {
 
   local val="$(config_string_get $1)"
   if [ -z "$val" ]; then
-    echo $1 "$2" >> "$CONFIG"
+    echo $1 "$2" >> "$CONFIG_FILE"
     return $?
   fi
-  sed -Ei "s/($1) .+/\1 $2/g" "$CONFIG"
+  sed -Ei "s/($1) .+/\1 $2/g" "$CONFIG_FILE"
 }
 
 
-MIN_PERCENT=45
-MAX_PERCENT=50
+CHARGE_CONTINUE=45
+CHARGE_STOP=50
 
 if [ -z "$TERMUX_API" ]; then
-  DELAY_REFRESH=60
+  SRV_DELAY=60
 else
-  DELAY_REFRESH=10
+  SRV_DELAY=10
 fi
 
-NEVER_STOP="false"
+CHARGE_NEVER_STOP="false"
 
-config_update=0
+_config_update=0
 
 config_refresh () {
-  if [ -r "$CONFIG" ]; then
-    local changed=$(stat -c "%Y" "$CONFIG")
-    if [ $changed -le $config_update ]; then
+  if [ -r "$CONFIG_FILE" ]; then
+    local changed=$(stat -c "%Y" "$CONFIG_FILE")
+    if [ $changed -le $_config_update ]; then
       return 0
     fi
 
-    config_update=$changed
+    _config_update=$changed
 
-    local min
-    local max
-    min=$(config_number_get charging-continue)
-    max=$(config_number_get charging-stop)
+    local cont
+    local stop
+    cont=$(config_number_get charging-continue)
+    stop=$(config_number_get charging-stop)
 
-    if ( [ -z "$min" ] || [ -z "$max" ] ); then
+    if [ -z "$cont" ] || [ -z "$stop" ]; then
       :
-    elif ( [ $min -lt 15 ] || [ $max -le $min ] || [ $max -gt 100 ] \
-      ); then
+    elif [ $cont -lt 15 ] || [ $stop -le $cont ] || [ $stop -gt 100 ]; then
       printerr "Arquivo de configuração mal definido!"
     else
-      MIN_PERCENT=$min
-      MAX_PERCENT=$max
+      CHARGE_CONTINUE=$cont
+      CHARGE_STOP=$stop
     fi
 
     local delay
     delay=$(config_number_get service-delay-not-charging)
     if [ -z "$delay" ]; then
       :
-    elif ( [ $delay -lt 6 ] || [ $delay -gt 60 ] ); then
+    elif [ $delay -lt 6 ] || [ $delay -gt 60 ]; then
       printerr "O tempo ocioso deve ser ser digitado em segundos, de 6 a 60 segundos"
     else
-      DELAY_REFRESH=$delay
+      SRV_DELAY=$delay
     fi
 
     local never_stop
@@ -151,7 +150,7 @@ config_refresh () {
     if [ -z "$never_stop" ]; then
       :
     else
-      NEVER_STOP="$never_stop"
+      CHARGE_NEVER_STOP="$never_stop"
     fi
 
     user_configs

@@ -22,10 +22,7 @@ if [ -z "$NO_PERMS" ]; then
   . "$PREFIX/lib/batservice/env.rc"
 fi
 
-NAME="BatService"
-VERSION="2.0.211208 beta"
-
-
+. "$LIB/consts.sh"
 . "$LIB/perms.sh"
 . "$LIB/error.sh"
 . "$LIB/config.sh"
@@ -33,11 +30,12 @@ VERSION="2.0.211208 beta"
 . "$LIB/jobs.sh"
 
 if [ ! -d "$DATA" ]; then
-  backup_owner "$PREFIX"
+  perms_backup "$PREFIX"
   mkdir -p "$DATA"
-  restore_owner "$PREFIX/etc"
-  restore_owner "$DATA"
+  perms_restore "$PREFIX/etc"
+  perms_restore "$DATA"
 fi
+
 
 echo "$NAME - conservação de bateria para o Galaxy A20"
 echo "Versão $VERSION"
