@@ -50,8 +50,16 @@ chmod +x $PREFIX/lib/batservice/notify.sh
 install_file lib/env.rc $PREFIX/lib/batservice/
 install_file lib/jobs.sh $PREFIX/lib/batservice/
 
-install_file tools/batservice-termux.sh $HOME/.termux/boot/
-chmod +x $HOME/.termux/boot/batservice-termux.sh
+boot_file=$(ls $HOME/.termux/boot/batservice-*.sh 2>/dev/null)
+expected_boot_file="$HOME/.termux/boot/batservice-termux.sh"
+if ( [ -n "$boot_file" ] && [ "$boot_file" != "$expected_boot_file" ] ); then
+  echo "ATUALIZE O BOOT DO NOTIFY QUE VOCÊ INSTALOU!"
+  echo "Pressione ENTER para continuar..."
+  read none
+else
+  install_file tools/batservice-termux.sh $HOME/.termux/boot/
+  chmod +x $HOME/.termux/boot/batservice-termux.sh
+fi
 
 install_file batservice.sh $PREFIX/bin/
 chmod +x $PREFIX/bin/batservice.sh

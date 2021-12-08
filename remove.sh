@@ -39,14 +39,14 @@ if [ ! -r "EXIT_FILE" ]; then
 fi
 
 echo "Removendo BatService e todos os arquivos dependentes..."
-rm $HOME/.termux/boot/batservice-termux.sh
+rm $HOME/.termux/boot/batservice-*.sh
 rm $PREFIX/bin/batservice.sh
 
 rm $PREFIX/lib/batservice/perms.sh
 rm $PREFIX/lib/batservice/error.sh
 rm $PREFIX/lib/batservice/config.sh
 rm $PREFIX/lib/batservice/battery.sh
-rm $PREFIX/lib/batservice/notify.sh
+rm $PREFIX/lib/batservice/notify*
 rm $PREFIX/lib/batservice/env.rc
 rm $PREFIX/lib/batservice/jobs.sh
 rmdir $PREFIX/lib/batservice
