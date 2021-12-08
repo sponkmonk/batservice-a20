@@ -31,7 +31,7 @@ config_valid_param () {
 
 config_number_get () {
   if [ -r "$CONFIG_FILE" ]; then
-    cat "$CONFIG_FILE" | grep $1 | grep -Eo '[[:digit:]]+'
+    grep -E "^ *$1 +[[:digit:]]+ *$" "$CONFIG_FILE" | grep -Eo '[[:digit:]]+'
     return 0
   fi
   return 1
@@ -50,13 +50,13 @@ config_number_set () {
     echo $1 $2 >> "$CONFIG_FILE"
     return $?
   fi
-  sed -Ei "s|($1) [[:digit:]]+|\1 $2|g" "$CONFIG_FILE"
+  sed -Ei "s|($1) .+|\1 $2|g" "$CONFIG_FILE"
   return $?
 }
 
 config_bool_get () {
   if [ -r "$CONFIG_FILE" ]; then
-    cat "$CONFIG_FILE" | grep $1 | grep -Eo '(true|false)'
+    grep -E "^ *$1 true *$" "$CONFIG_FILE" >/dev/null && echo true || echo false
     return 0
   fi
   return 1
@@ -75,12 +75,12 @@ config_bool_set () {
     echo $1 $2 >> "$CONFIG_FILE"
     return $?
   fi
-  sed -Ei "s/($1) (true|false)/\1 $2/g" "$CONFIG_FILE"
+  sed -Ei "s|($1) .+|\1 $2|g" "$CONFIG_FILE"
 }
 
 config_string_get () {
   if [ -r "$CONFIG_FILE" ]; then
-    cat "$CONFIG_FILE" | grep $1 | sed -E "s/$1 (.+)/\1/g"
+    grep $1 "$CONFIG_FILE" | sed -E "s/$1 (.+)/\1/g"
     return 0
   fi
   return 1
