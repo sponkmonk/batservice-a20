@@ -14,7 +14,7 @@
 #    along with BatService.  If not, see <https://www.gnu.org/licenses/>.
 
 
-if [ -r "$DATA/user-configs" ]; then
+if [ -r "$DATA/user-configs.sh" ]; then
   . "$DATA/user-configs.sh"
 else
   user_configs () { :; }
