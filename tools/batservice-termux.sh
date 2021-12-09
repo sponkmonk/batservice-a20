@@ -1,3 +1,5 @@
+#!/data/data/com.termux/files/usr/bin/sh
+
 #    This file is part of BatService.
 #
 #    BatService is free software: you can redistribute it and/or modify
@@ -13,23 +15,4 @@
 #    You should have received a copy of the GNU General Public License
 #    along with BatService.  If not, see <https://www.gnu.org/licenses/>.
 
-
-perms_backup () {
-  # Em testes, podemos ignorar isto
-  [ -n "$NO_PERMS" ] && return 0
-  _perms_user=$(stat -c "%U" "$1")
-  _perms_group=$(stat -c "%G" "$1")
-  _perms_modes=$(stat -c "%a" "$1")
-}
-
-perms_restore () {
-  [ -n "$NO_PERMS" ] && return 0
-  chown $_perms_user:$_perms_group "$1"
-  chmod $_perms_modes "$1"
-}
-
-perms_restore_r () {
-  [ -n "$NO_PERMS" ] && return 0
-  chown -R $_perms_user:$_perms_group "$1"
-  chmod -R $_perms_modes "$1"
-}
+su -c "$PREFIX/bin/batservice.sh" | $PREFIX/lib/batservice/notify.sh

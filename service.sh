@@ -1,6 +1,6 @@
-#!/system/bin/sh
+#!/bin/sh
 
-#    BatService v1.3 - battery conservation mode for Galaxy A20
+#    BatService v2.0 - battery conservation mode for Galaxy A20
 #
 #    Copyright (C) 2021 Cledson Ferreira
 #
@@ -18,97 +18,47 @@
 #    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
-NAME="BATSERVICE"
-Name="BatService"
-name="batservice"
-VERSION="1.3.211112"
+if [ -z "$NO_PERMS" ]; then
+  if [ -f "${0%/*}/lib/magisk-env.rc" ]; then
+    MODDIR="${0%/*}"
+    . "$MODDIR/lib/magisk-env.rc"
+    NO_PERMS=1
 
-if [ "$MODDIR" = "" ]; then
-  MODDIR=${0%/*}
-  SERVICE_LIB="$MODDIR/lib"
+  # Termux
+  else
+    . "$PREFIX/lib/batservice/env.rc"
+  fi
 fi
 
-. "$SERVICE_LIB/perms.sh"
-if [ "$DATA" = "" ]; then
-  DATA="$MODDIR/data"
-  mkdir -p "$DATA"
-fi
-
-. "$SERVICE_LIB/error.sh"
-
-if [ "$NO_SERVICE" = "" ]; then
-  . "$SERVICE_LIB/startup-helper.sh"
-else
-  log_cleanup () { :; }
-fi
-
-. "$SERVICE_LIB/config.sh"
-. "$SERVICE_LIB/battery.sh"
+. "$LIB/consts.sh"
+. "$LIB/perms.sh"
+. "$LIB/log.sh"
+. "$LIB/error.sh"
+. "$LIB/config.sh"
+. "$LIB/battery.sh"
+. "$LIB/jobs.sh"
 
 
-echo "$Name - conservação de bateria para o Galaxy A20"
+echo "$NAME - conservação de bateria para o Galaxy A20"
 echo "Versão $VERSION"
 echo
 
-if [ -r "$EXIT_FILE" ]; then
-  rm "$EXIT_FILE"
-fi
+echo "  -*- STATUS DA BATERIA -*- "
+echo "=============================="
 
-prev_percent=0
-not_charging_set=$DISABLED
-
-echo " -*- STATUS DA BATERIA -*- "
-echo " $(date) "
-echo "  ============================="
+[ -r "$EXIT_FILE" ] && rm "$EXIT_FILE"
 
 while [ ! -r "$EXIT_FILE" ]; do
 
+  log_cleanup
+
   config_refresh
 
-  battery_percent
-  battery_status
-  battery_current
-  battery_voltage
-  battery_temp
-
-  battery_switch_set get
-
-  if [ $prev_percent -ne $percent ]; then
-    battery_log
-    log_cleanup
-  fi
-
-  if ( [ "$status" = "Not charging" ] || [ "$status" = "Discharging" ] ); then
-
-    if ( [ $not_charging_set -eq $ENABLED ] && [ $percent -lt $MIN_PERCENT ] ); then
-      echo "ATIVAR carregamento"
-      battery_switch_set enable
-      not_charging_set=$DISABLED
-      echo
-      prev_percent=0
-      continue
-    fi
-
-    sleep $DELAY_REFRESH
-
-  elif [ "$status" = "Charging" ]; then
-
-    if ( [ $not_charging_set -eq $ENABLED ] || [ $percent -ge $MAX_PERCENT ] ); then
-      echo "DESATIVAR carregamento"
-      battery_switch_set disable
-      not_charging_set=$ENABLED
-      echo
-      prev_percent=0
-      continue
-    fi
-
-    sleep 6
-
-  fi
-
-  prev_percent=$percent
+  jobs_main
 
 done
+
+echo "=============================="
 
 battery_switch_set default
 rm "$EXIT_FILE"

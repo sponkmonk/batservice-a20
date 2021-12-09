@@ -1,0 +1,15 @@
+if ! [ -f "$PWD/service.sh" ]; then
+
+  echo "ERR: execute este arquivo dentro da raiz do código fonte do BatService!" >&2
+
+else
+
+export BWD="$PWD/test/tBWD"
+export LIB="$PWD/lib"
+export DATA="$PWD/test/config"
+export CACHE="$PWD/test/cache"
+export NO_PERMS=1
+
+[ -f "$PREFIX/bin/termux-notification" ] && export TERMUX_API=1
+
+fi

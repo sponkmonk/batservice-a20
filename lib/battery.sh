@@ -14,38 +14,38 @@
 #    along with BatService.  If not, see <https://www.gnu.org/licenses/>.
 
 
-if [ "$BWD" = "" ]; then
-  BWD="/sys/class/power_supply/battery"
-fi
-
-Bpercent="${BWD}/capacity"
-Bvoltage="${BWD}/voltage_avg"
-Bstatus="${BWD}/status"
-Bcurrent="${BWD}/current_avg"
-Bcurrentnow="${BWD}/current_now"
-Btemp="${BWD}/temp"
+SYSFS_CAPACITY="${BWD}/capacity"
+SYSFS_VOLTAGE="${BWD}/voltage_avg"
+SYSFS_STATUS="${BWD}/status"
+SYSFS_CURRENT="${BWD}/current_avg"
+SYSFS_CURRENT_NOW="${BWD}/current_now"
+SYSFS_TEMP="${BWD}/temp"
 
 # Controlador de carga do Galaxy A20 {
-Bswitch="${BWD}/hmt_ta_charge"
-if [ ! -r "$Bswitch" ]; then
+SYSFS_SWITCH="${BWD}/hmt_ta_charge"
+if [ ! -r "$SYSFS_SWITCH" ]; then
   printerr "Erro: o dispositivo não suporta controle de carga!"
   error $E_NOSWITCH
 fi
 
-DEFAULT=$(cat "$Bswitch")
-ENABLED=1
-DISABLED=0
-
+B_SWITCH_DEFAULT=$(cat "$SYSFS_SWITCH")
 # } A20
 
 
 DELAY_SWITCH=15
 
-RATIONALE_MAMIN=-10
-RATIONALE_MAMAX=10
+_NOT_CHARGING_MIN_MA=-10
+_NOT_CHARGING_MAX_MA=10
+
+# Conversões de valores para o peso esperado
+_VOLTAGE_ADJ="/ 1000"
+_CURRENT_ADJ="/ 1"
+_TEMP_ADJ="/ 10"
 
 battery_switch_set () {
-  switch_status=$(cat "$Bswitch")
+  switch_status=$(cat "$SYSFS_SWITCH")
+
+  local mode
 
   case $1 in
     get)
@@ -53,33 +53,39 @@ battery_switch_set () {
       ;;
     enable)
       mode=$ENABLED
+      echo "ATIVAR carregamento"
       ;;
     disable)
       mode=$DISABLED
+      echo "DESATIVAR carregamento"
       ;;
     default)
-      mode=$DEFAULT
+      mode=$B_SWITCH_DEFAULT
+      echo "RECUPERAR estado de carga"
       ;;
     *)
-      exit $E_WROPTION
+      printerr "Opção '$1' desconhecida!"
+      error $E_WROPTION
       ;;
   esac
 
   if [ $switch_status -ne $mode ]; then
-    echo $mode > "$Bswitch"
+    echo $mode > "$SYSFS_SWITCH"
     echo "Aguarde..."
     sleep $DELAY_SWITCH
 
-    result=$(cat "$Bswitch")
+    result=$(cat "$SYSFS_SWITCH")
     if [ $result -ne $mode ]; then
-      echo $DEFAULT > "$Bswitch"
+      echo $B_SWITCH_DEFAULT > "$SYSFS_SWITCH"
+      printerr "Impossível checar estado do controlador!"
       error $E_FASWITCH
     fi
 
     if [ $mode -eq $DISABLED ]; then
       battery_status
       if [ "$status" = "Charging" ]; then
-        echo $DEFAULT > "$Bswitch"
+        echo $B_SWITCH_DEFAULT > "$SYSFS_SWITCH"
+        printerr "Controlador de carga INVÁLIDO!"
         error $E_WRSWITCH
       fi
     fi
@@ -90,53 +96,71 @@ battery_switch_set () {
 
 
 battery_percent () {
-  percent=$(cat "$Bpercent")
+  percent=$(cat "$SYSFS_CAPACITY")
 }
 
 
 battery_status () {
-  status=$(cat "$Bstatus")
+  status=$(cat "$SYSFS_STATUS")
 
-  # corrige o status para "Not charging" quando a corrente varia abaixo de |10| mA
+  # corrige o status para "Not charging" quando a corrente varia
+  # abaixo de |10| mA
   battery_current_now
-  if ( [ "$status" = "Charging" ] && [ $current_now -le $RATIONALE_MAMAX ] && [ $current_now -ge $RATIONALE_MAMIN ] ); then
+  if [ "$status" = "Charging" ] &&\
+     [ $current_now -le $_NOT_CHARGING_MAX_MA ] &&\
+     [ $current_now -ge $_NOT_CHARGING_MIN_MA ]; then
     status="Not charging"
   fi
 }
 
 
 battery_current_now () {
-  current_now=$(cat "$Bcurrentnow")
+  current_now=$(cat "$SYSFS_CURRENT_NOW")
+  current_now=$(expr $current_now $_CURRENT_ADJ)
 }
 
 battery_current () {
-  current=$(cat "$Bcurrent")
+  current=$(cat "$SYSFS_CURRENT")
+  current=$(expr $current $_CURRENT_ADJ)
 }
 
 
 battery_temp () {
-  temp=$(cat "$Btemp")
-  temp=$(expr $temp / 10)
+  temp=$(cat "$SYSFS_TEMP")
+  temp=$(expr $temp $_TEMP_ADJ)
 }
 
 
 battery_voltage () {
-  voltage=$(cat "$Bvoltage")
-  voltage=$(expr $voltage / 1000)
+  voltage=$(cat "$SYSFS_VOLTAGE")
+  voltage=$(expr $voltage $_VOLTAGE_ADJ)
+}
+
+# Atualiza todas as variáveis
+battery_status_all () {
+  battery_switch_set get
+  battery_percent
+  battery_status
+  battery_current
+  battery_temp
+  battery_voltage
 }
 
 
 # depende de chamadas às funções anteriores
 battery_log () {
-  echo "$percent % ($status)"
-  echo "$current mA"
-  echo "$voltage mV"
-  echo "$temp °C"
+  local statustxt="$percent % ($status)"
+  [ -n "$1" ] && current=$current_now
+  statustxt="$statustxt $current mA $voltage mV $temp °C"
+
+  echo "${1}DATA:" $(date +"%d/%m/%Y %Hh%M")
+  echo "${1}$statustxt"
 
   hstatus="ATIVADO"
   if [ $switch_status -ne $ENABLED ]; then
     hstatus="DESATIVADO"
   fi
-  echo "Interruptor de carga: $hstatus"
-  echo
+  echo "${1}Interruptor de carga: $hstatus"
+
+  [ -z "$1" ] && echo
 }

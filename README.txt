@@ -1,8 +1,10 @@
-BATSERVICE (MAGISK PORT)
+BATSERVICE PARA O GALAXY A20
 
 Este é um simples módulo Magisk¹ para o Galaxy A20, que conserva a bateria entre 45 e 50 %, o que possibilita usar um "power bank" como se este fosse a própria bateria do dispositivo, prolongando bastante a vida útil da bateria interna do dispositivo.
 
 Isto funciona com praticamente todo carregador capaz de entregar a potência necessária para usar o Galaxy A20, isto é, qualquer fonte com potência igual ou maior que 5 W.
+
+NOTE: se você não sabe usar shell, instale a versão do Magisk!
 
 
 0. ANULAÇÃO DE GARANTIAS
@@ -10,49 +12,66 @@ Isto funciona com praticamente todo carregador capaz de entregar a potência nec
 Este programa vem com ABSOLUTAMENTE NENHUMA GARANTIA.
 Este é um software livre, e você pode redistribuí-lo sob certas condições; leia o arquivo COPYING para detalhes.
 
-Testei apenas no modelo referido. Se o kernel do seu Android não possuir o arquivo de controle de carga específico (1: veja a variável "Bswitch" no código fonte deste programa), ou o seu dispositivo não está rooteado, o BatService não funcionará.
+Testei apenas no modelo referido. Se o kernel do seu Android não possuir o arquivo de controle de carga específico (veja a variável "Bswitch" no código fonte deste programa), ou o seu dispositivo não está rooteado, o BatService não funcionará.
 
 
 1. INSTALANDO
 
-Com o arquivo com pacto em mãos, basta instalar pelo Magisk e reiniciar o Android.
+  (a) Termux
+
+Com o Termux instalado via F-Droid, e com a permissão de "Memória", abra-o e mova este pacote para ele. Pode ser necessário instalar o comando 'unzip' antes de extrair o pacote. Para isto:
+    $ apt install unzip -y
+
+Exemplo:
+    $ mkdir tmp && cd tmp
+    $ mv /sdcard/Download/BatService-A20-Termux-v2.*.zip ./
+    $ unzip BatService-A20-Termux-v2.*.zip
+    $ chmod +x install.sh && ./install.sh
+    $ su -c "echo Ok" # Faça que o seu gerenciador de root LEMBRE desta permissão
+
+É necessário instalar e executar o app Termux:Boot ao menos uma vez.
+
+Existe um script de desinstalação no pacote, portanto não recomendo apagar.
+
+
+  (b) Magisk
+
+Use o script "module-create.sh" para criar o pacote de instalação do Magisk. Após isso, basta instalar o pacote zip.
 
 
 2. COMO ENCERRAR O SERVIÇO (PARA DESENVOLVEDORES)
 
-O serviço pode ser encerrado (sem o Magisk) criando um arquivo nomeado "exit.err" no diretório <módulo>/data.
+O serviço pode ser encerrado criando um arquivo nomeado "exit.err" no diretório <módulo>/data.
 
 O mais recomendado é simplesmente desativar o módulo no Magisk e reiniciar o Android.
 
 
-3. PARA DESINSTALAR
+3. NOTIFICAÇÕES
 
-Remova o módulo normalmente pelo Magisk e reinicie o Android.
+O BatService suporta notificações através da API do Termux. Basta instalar esta extensão seguindo o guia oficial. Como deve imaginar: use a versão de Termux:API do F-Droid! em seguida, instale o pacote necessário.
 
-
-4. ALTERANDO PERCENTUAIS
-
-Os valores padrões são ótimos para a conservação da vida útil da bateria, segundo os estudos disponíveis em Battery University².
-
-Mas você pode definir quaisquer limites entre 15 e 100% alterando o arquivo de configuração "config.txt" no diretório "<módulo>/data". Por exemplo:
-  charging-continue 70
-  charging-stop 75
+Acesse a wiki³ para detalhes.
 
 
-5. TESTANDO/ALTERANDO CÓDIGO
+4. CONFIGURAÇÕES
 
-Você deve criar uma cópia dos arquivos presentes no endereço "/sys/class/power_supply/battery" em "qualquer/endereço". Para isso, defina a variável de ambiente BWD com esse endereço:
-  $ export BWD="qualquer/endereço"
+O formato do arquivo de configuração a ser salvo em "$PREFIX/etc/batservice/config.txt" é simples como este exemplo:
+    charging-never-stop false
+    charging-stop 50
+    charging-continue 45
+    service-delay-not-charging 60
 
-Se estiver no Linux, exporte o endereço para o diretório do serviço:
-  $ export MODDIR="qualquer/outro/endereço"
+Nenhuma configuração é obrigatória*, mas o arquivo deve terminar com uma linha vazia se for manipulado manualmente.
 
-Também exporte a seguinte variável para que o script mostre mensagens/erros na tela em vez de salvar num arquivo de registro:
-  $ export NO_SERVICE=1
+Existem restrições para os valores suportados:
+    cn: charging-never-stop       | true, false
+    cc: charging-continue         | 15 <= cc < cs
+    cs: charging-stop             | cc < cs <= 100
+    sd: service-delay-not-charging| 6 <= sd <= 60
 
-Desta forma, é possível executar o script em modo de usuário sem causar alterações nos arquivos de sistema.
+(*) cc depende de cs, portanto não é possível inserir apenas um!
 
-NOTA: no código fonte disponível no GitHub, há um diretório 'test' com todos os arquivos prontos para uso.
+NOTE: as abreviações (cc, cs etc.) são apenas para facilitar a leitura. O serviço não interpreta isso!
 
 
 PROBLEMAS?
@@ -64,5 +83,6 @@ Mastodon: @cledson_cavalcanti@mastodon.technology
 
 [1] https://github.com/topjohnwu/Magisk
 [2] https://batteryuniversity.com/article/bu-808-how-to-prolong-lithium-based-batteries
+[3] https://wiki.termux.com/wiki/Termux:API
 
 by cleds.upper

@@ -1,5 +1,3 @@
-# startup-helper.sh - inicializador do serviço
-
 #    This file is part of BatService.
 #
 #    BatService is free software: you can redistribute it and/or modify
@@ -15,22 +13,8 @@
 #    You should have received a copy of the GNU General Public License
 #    along with BatService.  If not, see <https://www.gnu.org/licenses/>.
 
-SERVICE_CACHE="$MODDIR/log"
+NAME="BatService"
+VERSION="2.1.211209"
 
-log_cleanup () {
-  if [ -r "$SERVICE_CACHE/out.log" ]; then
-
-    if [ $(stat -c "%s" "$SERVICE_CACHE/out.log") -gt 30000 ]; then
-      sed -i 1,1700d "$SERVICE_CACHE/out.log"
-      exec>> "$SERVICE_CACHE/out.log"
-    fi
-  fi
-}
-
-mkdir -p "$SERVICE_CACHE"
-
-echo "  ====== REGISTRO" "$NAME" "======="\
-  >> "$SERVICE_CACHE/out.log"
-
-exec>> "$SERVICE_CACHE/out.log"
-
+ENABLED=1
+DISABLED=0
