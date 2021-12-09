@@ -1,6 +1,6 @@
 id=batservice-a20
 name=BatService para Galaxy A20
-version=2.0
-versionCode=20
+version=2.1
+versionCode=21
 author=Cledson Ferreira
 description=Serviço para conservação da bateria (Magisk port)
