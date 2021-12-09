@@ -3,7 +3,7 @@
 # Este script apenas empacota o módulo com todos os arquivos necessários
 
 NAME=BatService-A20
-VERSION=v1.3.211112
+VERSION=v2.1.211209
 
 echo "Criando pacote Magisk..."
 
@@ -22,12 +22,16 @@ else
   PAR_DATA=""
 fi
 
+echo "Removendo arquivos desnecessários..."
+rm out/lib/env.rc
+rm out/lib/notify.sh
+
 cd out
 zip -r $NAME-$VERSION-Magisk.zip META-INF lib $PAR_DATA module.prop service.sh
 mv $NAME-$VERSION-Magisk.zip ../
 cd ..
 rm -r out
 
-echo "Finalizado!"
+echo "Terminado!"
 echo "Prossiga a instalação no aplicativo Magisk"
 echo "by cleds.upper"

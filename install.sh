@@ -22,7 +22,7 @@ if [ $(id -u) -eq 0 ]; then
 fi
 
 install_file() {
-  if [ ! -d "$2" ]; then
+  if [ ! -d "$2" ] && [ ! -f "$1" ]; then
     mkdir -p "$2"
     e=$?
     if [ $e -ne 0 ]; then
@@ -62,7 +62,7 @@ else
   chmod +x $HOME/.termux/boot/batservice-termux.sh
 fi
 
-install_file batservice.sh $PREFIX/bin/
+install_file service.sh $PREFIX/bin/batservice.sh
 chmod +x $PREFIX/bin/batservice.sh
 
 install_file COPYING $PREFIX/share/batservice/
