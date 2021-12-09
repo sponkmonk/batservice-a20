@@ -14,7 +14,7 @@
 #    along with BatService.  If not, see <https://www.gnu.org/licenses/>.
 
 NAME="BatService"
-VERSION="2.0.211208"
+VERSION="2.0.211209"
 
 ENABLED=1
 DISABLED=0
