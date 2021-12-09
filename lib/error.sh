@@ -14,6 +14,11 @@
 #    along with BatService.  If not, see <https://www.gnu.org/licenses/>.
 
 
+if [ ! -d "$DATA" ]; then
+  perms_backup "$PREFIX"
+  mkdir -p "$DATA"
+  perms_restore "$DATA"
+fi
 EXIT_FILE="$DATA/exit.err"
 # Se o programa encerra de forma inesperada, esse arquivo pode conter um dos códigos de erros das variáveis E_*.
 
@@ -23,15 +28,29 @@ if [ -z "$NO_SERVICE" ]; then
   exec 2>&1
 fi
 
+
 # error $E_NOROOT
-error () {
-  if [ $1 -ne 0 ]; then
-    perms_backup "$DATA"
-    echo $1 > "$EXIT_FILE"
-    perms_restore "$EXIT_FILE"
-  fi
-  exit $1
-}
+if [ -n "$MODDIR" ]; then
+
+  error () {
+    if [ $1 -ne 0 ]; then
+      echo $1 > "$EXIT_FILE"
+    fi
+    abort "ERR: $1"
+  }
+
+else
+
+  error () {
+    if [ $1 -ne 0 ]; then
+      perms_backup "$DATA"
+      echo $1 > "$EXIT_FILE"
+      perms_restore "$EXIT_FILE"
+    fi
+    exit $1
+  }
+
+fi
 
 # printerr MENSAGEM DE ERRO
 printerr () {

@@ -19,34 +19,38 @@
 
 
 if [ -z "$NO_PERMS" ]; then
-  . "$PREFIX/lib/batservice/env.rc"
+  if [ -f "${0%/*}/lib/magisk-env.rc" ]; then
+    MODDIR="${0%/*}"
+    . "$MODDIR/lib/magisk-env.rc"
+    NO_PERMS=1
+
+  # Termux
+  else
+    . "$PREFIX/lib/batservice/env.rc"
+  fi
 fi
 
 . "$LIB/consts.sh"
 . "$LIB/perms.sh"
+. "$LIB/log.sh"
 . "$LIB/error.sh"
 . "$LIB/config.sh"
 . "$LIB/battery.sh"
 . "$LIB/jobs.sh"
-
-if [ ! -d "$DATA" ]; then
-  perms_backup "$PREFIX"
-  mkdir -p "$DATA"
-  perms_restore "$PREFIX/etc"
-  perms_restore "$DATA"
-fi
 
 
 echo "$NAME - conservação de bateria para o Galaxy A20"
 echo "Versão $VERSION"
 echo
 
-echo " -*- STATUS DA BATERIA -*- "
+echo "  -*- STATUS DA BATERIA -*- "
 echo "=============================="
 
-if [ -r "$EXIT_FILE" ]; then rm "$EXIT_FILE"; fi
+[ -r "$EXIT_FILE" ] && rm "$EXIT_FILE"
 
 while [ ! -r "$EXIT_FILE" ]; do
+
+  log_cleanup
 
   config_refresh
 

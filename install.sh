@@ -50,6 +50,7 @@ chmod +x $PREFIX/lib/batservice/notify.sh
 install_file lib/env.rc $PREFIX/lib/batservice/
 install_file lib/jobs.sh $PREFIX/lib/batservice/
 install_file lib/consts.sh $PREFIX/lib/batservice/
+install_file lib/log.sh $PREFIX/lib/batservice/
 
 boot_file=$(ls $HOME/.termux/boot/batservice-*.sh 2>/dev/null)
 expected_boot_file="$HOME/.termux/boot/batservice-termux.sh"
@@ -62,10 +63,11 @@ else
   chmod +x $HOME/.termux/boot/batservice-termux.sh
 fi
 
-install_file batservice.sh $PREFIX/bin/
-chmod +x $PREFIX/bin/batservice.sh
-
 install_file COPYING $PREFIX/share/batservice/
+
+echo "Instalando executável"
+cp service.sh $PREFIX/bin/batservice.sh
+chmod +x $PREFIX/bin/batservice.sh
 
 echo "  Este programa é software livre: isto significa que você "
 echo "  pode usar, alterar, redistribuir ou vender (exceto "

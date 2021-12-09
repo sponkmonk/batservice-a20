@@ -149,15 +149,12 @@ battery_status_all () {
 
 # depende de chamadas às funções anteriores
 battery_log () {
-  local statustxt="$1$percent % ($status)"
-  if [ -n "$1" ]; then
-    # current é o current_now
-    current=$current_now
-  fi
+  local statustxt="$percent % ($status)"
+  [ -n "$1" ] && current=$current_now
   statustxt="$statustxt $current mA $voltage mV $temp °C"
 
   echo "${1}DATA:" $(date +"%d/%m/%Y %Hh%M")
-  echo "$statustxt"
+  echo "${1}$statustxt"
 
   hstatus="ATIVADO"
   if [ $switch_status -ne $ENABLED ]; then
@@ -165,5 +162,5 @@ battery_log () {
   fi
   echo "${1}Interruptor de carga: $hstatus"
 
-  if [ -z "$1" ]; then echo; fi
+  [ -z "$1" ] && echo
 }

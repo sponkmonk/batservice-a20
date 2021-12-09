@@ -1,6 +1,6 @@
-BATSERVICE
+BATSERVICE PARA O GALAXY A20
 
-É um simples programa para o Galaxy A20 (com root!) com o Termux, que conserva a bateria entre 45 e 50 %, o que possibilita usar um "power bank" como se este fosse a própria bateria do dispositivo, prolongando bastante a vida útil da bateria interna do dispositivo.
+Este é um simples módulo Magisk¹ para o Galaxy A20, que conserva a bateria entre 45 e 50 %, o que possibilita usar um "power bank" como se este fosse a própria bateria do dispositivo, prolongando bastante a vida útil da bateria interna do dispositivo.
 
 Isto funciona com praticamente todo carregador capaz de entregar a potência necessária para usar o Galaxy A20, isto é, qualquer fonte com potência igual ou maior que 5 W.
 
@@ -17,6 +17,8 @@ Testei apenas no modelo referido. Se o kernel do seu Android não possuir o arqu
 
 1. INSTALANDO
 
+  (a) Termux
+
 Com o Termux instalado via F-Droid, e com a permissão de "Memória", abra-o e mova este pacote para ele. Pode ser necessário instalar o comando 'unzip' antes de extrair o pacote. Para isto:
     $ apt install unzip -y
 
@@ -27,12 +29,31 @@ Exemplo:
     $ chmod +x install.sh && ./install.sh
     $ su -c "echo Ok" # Faça que o seu gerenciador de root LEMBRE desta permissão
 
-É necessário instalar e executar o app Termux:Boot ao menos uma vez. Se fez isso após a instalação do BatService, repita o último comando.
+É necessário instalar e executar o app Termux:Boot ao menos uma vez.
 
 Existe um script de desinstalação no pacote, portanto não recomendo apagar.
 
 
-2. CONFIGURAÇÕES
+  (b) Magisk
+
+Use o script "module-create.sh" para criar o pacote de instalação do Magisk. Após isso, basta instalar o pacote zip.
+
+
+2. COMO ENCERRAR O SERVIÇO (PARA DESENVOLVEDORES)
+
+O serviço pode ser encerrado criando um arquivo nomeado "exit.err" no diretório <módulo>/data.
+
+O mais recomendado é simplesmente desativar o módulo no Magisk e reiniciar o Android.
+
+
+3. NOTIFICAÇÕES
+
+O BatService suporta notificações através da API do Termux. Basta instalar esta extensão seguindo o guia oficial. Como deve imaginar: use a versão de Termux:API do F-Droid! em seguida, instale o pacote necessário.
+
+Acesse a wiki³ para detalhes.
+
+
+4. CONFIGURAÇÕES
 
 O formato do arquivo de configuração a ser salvo em "$PREFIX/etc/batservice/config.txt" é simples como este exemplo:
     charging-never-stop false
@@ -53,35 +74,6 @@ Existem restrições para os valores suportados:
 NOTE: as abreviações (cc, cs etc.) são apenas para facilitar a leitura. O serviço não interpreta isso!
 
 
-3. NOTIFICAÇÕES
-
-O BatService suporta notificações através da API do Termux. Basta instalar esta extensão seguindo o guia oficial. Como deve imaginar: use a versão de Termux:API do F-Droid! em seguida, instale o pacote necessário.
-
-Acesse [https://wiki.termux.com/wiki/Termux:API] para detalhes.
-
-
-4. DESINSTALANDO
-
-Não precisa encerrar o serviço!
-
-Vá para o diretório do pacote instalado e execute o comando ./remove.sh:
-    $ cd tmp
-    $ chmod +x remove.sh && ./remove.sh
-
-
-5. PAUSANDO O SERVIÇO PARA CARGA COMPLETA
-
-Se você instalou a API, use o botão (⏸️).
-
-Caso contrário, execute o seguinte comando em uma sessão do terminal:
-    $ $PREFIX/lib/batservice/notify.sh force-charge
-
-Para desfazer a configuração/continuar o serviço, basta repetir o mesmo procedimento.
-
-Se a carga da CPU usada pelo serviço é muito importante:
-    $ $PREFIX/lib/batservice/notify.sh quit # Este comando encerra o serviço de fato.
-
-
 PROBLEMAS?
 
 Você deve entrar em contato comigo pela rede social Mastodon. Recebo muito spam no meu e-mail e possivelmente vou ignorar qualquer mensagem de estranhes que eu tenha recebido por lá.
@@ -89,6 +81,8 @@ Você deve entrar em contato comigo pela rede social Mastodon. Recebo muito spam
 Mastodon: @cledson_cavalcanti@mastodon.technology
 
 
-Referência: https://batteryuniversity.com/article/bu-808-how-to-prolong-lithium-based-batteries
+[1] https://github.com/topjohnwu/Magisk
+[2] https://batteryuniversity.com/article/bu-808-how-to-prolong-lithium-based-batteries
+[3] https://wiki.termux.com/wiki/Termux:API
 
 by cleds.upper

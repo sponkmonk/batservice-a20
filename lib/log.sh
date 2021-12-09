@@ -1,3 +1,5 @@
+#    log.sh - redirect output to a file.
+#
 #    This file is part of BatService.
 #
 #    BatService is free software: you can redistribute it and/or modify
@@ -13,23 +15,24 @@
 #    You should have received a copy of the GNU General Public License
 #    along with BatService.  If not, see <https://www.gnu.org/licenses/>.
 
+CACHE_FILE="$CACHE/out.log"
 
-perms_backup () {
-  # Em testes, podemos ignorar isto
-  [ -n "$NO_PERMS" ] && return 0
-  _perms_user=$(stat -c "%U" "$1")
-  _perms_group=$(stat -c "%G" "$1")
-  _perms_modes=$(stat -c "%a" "$1")
+_logging=0
+log_start () {
+  mkdir -p "$CACHE"
+  exec>> "$CACHE_FILE"
+  _logging=1
 }
 
-perms_restore () {
-  [ -n "$NO_PERMS" ] && return 0
-  chown $_perms_user:$_perms_group "$1"
-  chmod $_perms_modes "$1"
+log_cleanup () {
+  [ $_logging -eq 0 ] && return 0
+
+  local size
+  size=$(stat -c '%s' "$CACHE_FILE")
+  if [ -n "$size" ] && [ $size -ge 30000 ]; then
+    sed -i 1,1700d "$CACHE_FILE"
+    exec>> "$CACHE_FILE"
+  fi
 }
 
-perms_restore_r () {
-  [ -n "$NO_PERMS" ] && return 0
-  chown -R $_perms_user:$_perms_group "$1"
-  chmod -R $_perms_modes "$1"
-}
+[ -n "$MODDIR" ] && log_start

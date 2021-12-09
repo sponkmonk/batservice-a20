@@ -111,20 +111,20 @@ run_jobs () {
 
   user_jobs_highest
   r=$?
-  if [ $r -eq $JOBS_OK ]; then return 1; fi
-  if [ $r -eq $JOBS_SKIP ]; then return 0; fi
+  [ $r -eq $JOBS_OK ] && return 1
+  [ $r -eq $JOBS_SKIP ] && return 0
 
   never_stop_action
   r=$?
-  if [ $r -eq $JOBS_OK ]; then return 1; fi
-  if [ $r -eq $JOBS_SKIP ]; then return 0; fi
+  [ $r -eq $JOBS_OK ] && return 1
+  [ $r -eq $JOBS_SKIP ] && return 0
 
   capacity_action
-  if [ $? -eq $JOBS_OK ]; then return 1; fi
+  [ $r -eq $JOBS_OK ] && return 1
 
   user_jobs_lowest
   r=$?
-  if [ $r -eq $JOBS_OK ]; then return 1; fi
+  [ $r -eq $JOBS_OK ] && return 1
 
   return 0
 }

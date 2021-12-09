@@ -16,9 +16,7 @@
 #    along with BatService.  If not, see <https://www.gnu.org/licenses/>.
 
 NO_SERVICE=1
-if [ -z "$NO_PERMS" ]; then
-  . "$PREFIX/lib/batservice/env.rc"
-fi
+[ -z "$NO_PERMS" ] && . "$PREFIX/lib/batservice/env.rc"
 
 if [ -n "$DATA_FIX" ]; then
   DATA="$DATA_FIX"
@@ -27,8 +25,10 @@ fi
 
 NO_PERMS=1
 . "$LIB/perms.sh"
+. "$LIB/log.sh"
 . "$LIB/error.sh"
 . "$LIB/config.sh"
+
 
 send_message () {
   if [ -z "$TERMUX_API" ]; then return 0; fi
@@ -44,7 +44,7 @@ send_status () {
   fi
 
   if [ -z "$TERMUX_API" ]; then
-    if [ -n "$NO_LOGS" ]; then echo "STATUS: $1"; fi
+    [ -n "$NO_LOGS" ] && echo "STATUS: $1"
   else
     termux-notification -i batservice --ongoing --alert-once\
       --icon "battery_std" -t "Status do serviço" -c "$1"\
@@ -70,8 +70,17 @@ notify_quit () {
   exit 0
 }
 
+param_filter () {
+  local p="$(echo $1 | grep -Eo '(-)?[[:digit:]]+ %')"
+  [ -z "$p" ] && return 1
+  percent="$p"
+  status="$(echo $1 | grep -Eo '\([[:alpha:] ]+\)')"
+  current="$(echo $1 | grep -Eo '(-)?[[:digit:]]+ mA')"
+  voltage="$(echo $1 | grep -Eo '(-)?[[:digit:]]+ mV')"
+  temp="$(echo $1 | grep -Eo '(-)?[[:digit:]]+ .C')"
+  return 0
+}
 
-if [ ! -d "$DATA" ]; then mkdir -p "$DATA"; fi
 
 if [ -n "$1" ]; then
 
@@ -114,33 +123,7 @@ if [ -n "$1" ]; then
 fi
 
 
-if [ -z "$NO_LOGS" ]; then
-  log_cleanup () {
-    if [ -r "$CACHE/out.log" ]; then
-      if [ $(stat -c "%s" "$CACHE/out.log") -gt 30000 ]; then
-        sed -i 1,1700d "$CACHE/out.log"
-        exec>> "$CACHE/out.log"
-      fi
-    fi
-  }
-
-  mkdir -p "$CACHE"
-  exec>> "$CACHE/out.log"
-else
-  log_cleanup () { :; }
-fi
-
-
-param_filter () {
-  local p="$(echo \"$1\" | grep -Eo '(-)?[[:digit:]]+ %')"
-  if [ -z "$p" ]; then return 1; fi
-  percent="$p"
-  status="$(echo \"$1\" | grep -Eo '\([[:alpha:] ]+\)')"
-  current="$(echo \"$1\" | grep -Eo '(-)?[[:digit:]]+ mA')"
-  voltage="$(echo \"$1\" | grep -Eo '(-)?[[:digit:]]+ mV')"
-  temp="$(echo \"$1\" | grep -Eo '(-)?[[:digit:]]+ .C')"
-  return 0
-}
+[ -z "$NO_LOGS" ] && log_start
 
 while [ "$stdin" != "==============================" ]; do
   read stdin || exit 0
@@ -149,7 +132,9 @@ done
 
 while [ 0 ]; do
   read stdin || notify_quit
-  if [ "$stdin" = "==============================" ]; then break; fi
+  [ "$stdin" = "==============================" ] && break
+
+  log_cleanup
 
   do_print=1
   echo "$stdin" | grep -E '^#' >/dev/null
@@ -166,7 +151,7 @@ while [ 0 ]; do
   echo "$stdin" | grep "ERR: " >/dev/null
   if [ $? -ne 0 ]; then
     param_filter "$stdin"
-    if [ $? -eq 0 ]; then notify_status; fi
+    [ $? -eq 0 ] && notify_status
   else send_message "$stdin"; fi
 
   if [ $do_print -eq 1 ]; then echo "$stdin"; fi
