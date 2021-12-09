@@ -50,6 +50,7 @@ rm $PREFIX/lib/batservice/notify*
 rm $PREFIX/lib/batservice/env.rc
 rm $PREFIX/lib/batservice/jobs.sh
 rm $PREFIX/lib/batservice/consts.sh
+rm $PREFIX/lib/batservice/log.sh
 rmdir $PREFIX/lib/batservice
 
 rm $PREFIX/share/batservice/COPYING
