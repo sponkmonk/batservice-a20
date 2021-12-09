@@ -106,9 +106,9 @@ battery_status () {
   # corrige o status para "Not charging" quando a corrente varia
   # abaixo de |10| mA
   battery_current_now
-  if ( [ "$status" = "Charging" ] &&\
+  if [ "$status" = "Charging" ] &&\
      [ $current_now -le $_NOT_CHARGING_MAX_MA ] &&\
-     [ $current_now -ge $_NOT_CHARGING_MIN_MA ] ); then
+     [ $current_now -ge $_NOT_CHARGING_MIN_MA ]; then
     status="Not charging"
   fi
 }
