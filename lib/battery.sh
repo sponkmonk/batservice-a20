@@ -21,6 +21,13 @@ SYSFS_CURRENT="${BWD}/current_avg"
 SYSFS_CURRENT_NOW="${BWD}/current_now"
 SYSFS_TEMP="${BWD}/temp"
 
+# DISPENSÁVEIS
+# charge_now deveria mostrar a carga restante em micro-Ah segundo a
+# documentação do Linux; mas no Galaxy A20, charge_counter é este
+# arquivo
+SYSFS_CHARGE_NOW="${BWD}/charge_counter"
+SYSFS_CHARGE_FULL="${BWD}/charge_full"
+
 # Controlador de carga do Galaxy A20 {
 SYSFS_SWITCH="${BWD}/hmt_ta_charge"
 if [ ! -r "$SYSFS_SWITCH" ]; then
@@ -39,6 +46,7 @@ _NOT_CHARGING_MAX_MA=10
 
 # Conversões de valores para o peso esperado
 _VOLTAGE_ADJ="/ 1000"
+_CHARGE_ADJ="/ 1000"
 _CURRENT_ADJ="/ 1"
 _TEMP_ADJ="/ 10"
 
@@ -144,6 +152,17 @@ battery_status_all () {
   battery_current
   battery_temp
   battery_voltage
+}
+
+
+battery_charge_now () {
+  charge_now=$(cat "$SYSFS_CHARGE_NOW")
+  charge_now=$(expr $charge_now $_CHARGE_ADJ)
+}
+
+battery_charge_full () {
+  charge_full=$(cat "$SYSFS_CHARGE_FULL")
+  charge_full=$(expr $charge_full $_CHARGE_ADJ)
 }
 
 

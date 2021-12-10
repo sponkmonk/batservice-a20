@@ -5,6 +5,8 @@ default_values() {
   mkdir -p tBWD
   echo -104 > tBWD/current_now
   echo -100 > tBWD/current_avg
+  echo 1600000 > tBWD/charge_counter
+  echo 4000000 > tBWD/charge_full
   echo 3780000 > tBWD/voltage_avg
   echo 290 > tBWD/temp
   echo Discharging > tBWD/status
@@ -36,6 +38,7 @@ discharge_to () {
     p=$(expr $p - 1)
     echo $p > tBWD/capacity
     expr 3500000 + 7000 \* $p > tBWD/voltage_avg
+    expr 40000 \* $p > tBWD/charge_counter
     sleep 6
   done
   echo -1 > tBWD/current_now
@@ -62,6 +65,7 @@ charge_to () {
     p=$(expr $p + 1)
     echo $p > tBWD/capacity
     expr 3500000 + 7000 \* $p > tBWD/voltage_avg
+    expr 40000 \* $p > tBWD/charge_counter
     sleep 6
   done
   echo "Concluído"
