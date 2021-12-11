@@ -48,9 +48,9 @@ install_file lib/battery.sh $PREFIX/lib/batservice/
 install_file lib/notify.sh $PREFIX/lib/batservice/
 chmod +x $PREFIX/lib/batservice/notify.sh
 install_file lib/env.rc $PREFIX/lib/batservice/
-install_file lib/jobs.sh $PREFIX/lib/batservice/
 install_file lib/consts.sh $PREFIX/lib/batservice/
 install_file lib/log.sh $PREFIX/lib/batservice/
+install_file lib/events.sh $PREFIX/lib/batservice/
 
 boot_file=$(ls $HOME/.termux/boot/batservice-*.sh 2>/dev/null)
 expected_boot_file="$HOME/.termux/boot/batservice-termux.sh"
