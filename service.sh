@@ -53,7 +53,6 @@ while [ ! -r "$EXIT_FILE" ]; do
   config_refresh
 
   events_iter_main
-
 done
 
 echo "=============================="

@@ -10,6 +10,9 @@ user_events_pre () {
   return 0
 }
 
+user_tasks () {
+  return $EVENTS_OK
+}
 
 user_on_status_change () {
   return $EVENTS_OK

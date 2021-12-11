@@ -19,6 +19,8 @@
 # Os eventos são executados nesta ordem:
 
 user_events_pre () { :; }
+user_tasks () { :; }
+
 user_on_status_change () { :; }
 
 user_on_charge () { :; }
@@ -36,8 +38,36 @@ EVENTS_OK=0    # continua o processo dos demais eventos.
 EVENTS_SKIP=1  # pula para a próxima iteração.
 EVENTS_NEXT=2  # avança a iteração imediatamente.
 
-switch_set=$DISABLED
+_EVENTS_NEXT_LIMIT=3
 
+_events_switch_set=$DISABLED
+
+
+do_charge_stop () {
+  if [ $CHARGE_NEVER_STOP -eq $ENABLED ]; then
+    if [ $_events_switch_set -eq $ENABLED ]; then
+      battery_switch_set enable
+      _events_switch_set=$DISABLED
+      return $EVENTS_NEXT
+    fi
+    return $EVENTS_OK
+  fi
+
+  case "$status" in
+    *charging)
+      return $EVENTS_OK
+      ;;
+  esac
+
+  if [ $_events_switch_set -eq $ENABLED ] || [ $percent -ge $CHARGE_STOP ]; then
+    battery_switch_set disable
+    echo '#upd Carregamento parou'
+    _events_switch_set=$ENABLED
+    return $EVENTS_NEXT
+  fi
+
+  return $EVENTS_OK
+}
 
 on_status_change () {
   local r
@@ -70,20 +100,7 @@ on_status_change () {
 
 on_charge () {
   user_on_charge
-  local r=$?
-  [ $r -ne $EVENTS_OK ] && return $r
-
-  [ $CHARGE_NEVER_STOP -eq $ENABLED ] && return $EVENTS_OK
-
-  if [ $switch_set -eq $ENABLED ]\
-      || [ $percent -ge $CHARGE_STOP ]; then
-    battery_switch_set disable
-    echo '#upd Carregamento parou'
-    switch_set=$ENABLED
-    return $EVENTS_NEXT
-  fi
-
-  return $EVENTS_OK
+  return $?
 }
 
 on_discharge () {
@@ -91,10 +108,10 @@ on_discharge () {
   local r=$?
   [ $r -ne $EVENTS_OK ] && return $r
 
-  if [ $switch_set -eq $ENABLED ]\
+  if [ $_events_switch_set -eq $ENABLED ]\
       && [ $percent -lt $CHARGE_CONTINUE ]; then
     battery_switch_set enable
-    switch_set=$DISABLED
+    _events_switch_set=$DISABLED
     return $EVENTS_NEXT
   fi
 
@@ -120,6 +137,14 @@ on_temp_decrease () {
 
 event_iter () {
   local r=$EVENTS_OK
+
+  do_charge_stop
+  r=$?
+  [ $r -ne $EVENTS_OK ] && return $r
+
+  user_tasks
+  r=$?
+  [ $r -ne $EVENTS_OK ] && return $r
 
   if [ "$prev_status" != "$status" ]; then
     on_status_change
@@ -153,6 +178,7 @@ event_iter () {
   return $?
 }
 
+
 # Exibe o status da bateria
 do_log () {
   if [ $prev_percent -ne $percent ]; then
@@ -167,6 +193,7 @@ do_log () {
 }
 
 _EVENT_LOOP_STARTED=0
+_events_next_count=0
 events_iter_main () {
   if [ $_EVENT_LOOP_STARTED -eq 0 ]; then
     _EVENT_LOOP_STARTED=1
@@ -178,6 +205,7 @@ events_iter_main () {
 
     user_events_pre
     battery_log
+
   else
 
     battery_status_all
@@ -193,7 +221,17 @@ events_iter_main () {
   prev_percent=$percent
   prev_temp=$temp
 
-  [ $r -eq $EVENTS_NEXT ] && return 0
+  if [ $r -eq $EVENTS_NEXT ]; then
+    _events_next_count=$(expr $_events_next_count + 1)
+    if [ $_events_next_count -gt $_EVENTS_NEXT_LIMIT ]; then
+      printerr "Funções não podem interromper o loop de eventos mais que $_EVENTS_NEXT_LIMIT vezes em sequência."\
+      'O programa foi abortado para evitar problemas.'
+      error $E_ENCLIMIT
+    fi
+    return 0
+
+  fi
+  _events_next_count=0
 
   case "$status" in
     Charging)
