@@ -36,25 +36,23 @@ fi
 . "$LIB/error.sh"
 . "$LIB/config.sh"
 . "$LIB/battery.sh"
-. "$LIB/jobs.sh"
+. "$LIB/events.sh"
 
 
 echo "$NAME - conservação de bateria para o Galaxy A20"
 echo "Versão $VERSION"
 echo
 
-echo "  -*- STATUS DA BATERIA -*- "
+echo "   -*- STATUS DA BATERIA -*-  "
 echo "=============================="
 
 [ -r "$EXIT_FILE" ] && rm "$EXIT_FILE"
 
 while [ ! -r "$EXIT_FILE" ]; do
 
-  log_cleanup
-
   config_refresh
 
-  jobs_main
+  events_iter_main
 
 done
 

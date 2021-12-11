@@ -36,7 +36,7 @@ send_message () {
 }
 
 send_status () {
-  local val=$(config_bool_get charging-never-stop)
+  local val=$(config_bool_get charge-never-stop)
   if [ "$val" = "true" ]; then
     local btn="ᐅ"
   else
@@ -94,14 +94,14 @@ if [ -n "$1" ]; then
 
     force-charge)
 
-      val=$(config_bool_get charging-never-stop)
+      val=$(config_bool_get charge-never-stop)
       case "$val" in
         true)
-          config_bool_set charging-never-stop false
+          config_bool_set charge-never-stop false
           val="false"
           ;;
         false|"")
-          config_bool_set charging-never-stop true
+          config_bool_set charge-never-stop true
           val="true"
           ;;
       esac

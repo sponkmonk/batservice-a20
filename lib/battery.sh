@@ -39,7 +39,7 @@ B_SWITCH_DEFAULT=$(cat "$SYSFS_SWITCH")
 # } A20
 
 
-DELAY_SWITCH=15
+DELAY_SWITCH=10
 
 _NOT_CHARGING_MIN_MA=-10
 _NOT_CHARGING_MAX_MA=10
@@ -61,15 +61,15 @@ battery_switch_set () {
       ;;
     enable)
       mode=$ENABLED
-      echo "ATIVAR carregamento"
+      debug "ATIVAR carregamento"
       ;;
     disable)
       mode=$DISABLED
-      echo "DESATIVAR carregamento"
+      debug "DESATIVAR carregamento"
       ;;
     default)
       mode=$B_SWITCH_DEFAULT
-      echo "RECUPERAR estado de carga"
+      debug "RECUPERAR estado de carga padrão"
       ;;
     *)
       printerr "Opção '$1' desconhecida!"
@@ -79,7 +79,7 @@ battery_switch_set () {
 
   if [ $switch_status -ne $mode ]; then
     echo $mode > "$SYSFS_SWITCH"
-    echo "Aguarde..."
+    debug "Aguarde..."
     sleep $DELAY_SWITCH
 
     result=$(cat "$SYSFS_SWITCH")

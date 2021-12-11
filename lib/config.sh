@@ -14,11 +14,8 @@
 #    along with BatService.  If not, see <https://www.gnu.org/licenses/>.
 
 
-if [ -r "$DATA/user-configs.sh" ]; then
-  . "$DATA/user-configs.sh"
-else
-  user_configs () { :; }
-fi
+user_configs () { :; }
+[ -r "$DATA/user-configs.sh" ] && . "$DATA/user-configs.sh"
 
 CONFIG_FILE="$DATA/config.txt"
 
@@ -99,6 +96,7 @@ config_string_set () {
 }
 
 
+CHARGE_NEVER_STOP=$DISABLED
 CHARGE_CONTINUE=45
 CHARGE_STOP=50
 
@@ -107,8 +105,6 @@ if [ -z "$TERMUX_API" ]; then
 else
   SRV_DELAY=10
 fi
-
-CHARGE_NEVER_STOP="false"
 
 _config_update=0
 
@@ -121,10 +117,18 @@ config_refresh () {
 
     _config_update=$changed
 
+    local never_stop
+    never_stop=$(config_bool_get charge-never-stop)
+    if [ -z "$never_stop" ]; then
+      :
+    else
+      [ "$never_stop" = "true" ] && CHARGE_NEVER_STOP=$ENABLED || CHARGE_NEVER_STOP=$DISABLED
+    fi
+
     local cont
     local stop
-    cont=$(config_number_get charging-continue)
-    stop=$(config_number_get charging-stop)
+    cont=$(config_number_get charge-continue)
+    stop=$(config_number_get charge-stop)
 
     if [ -z "$cont" ] || [ -z "$stop" ]; then
       :
@@ -143,14 +147,6 @@ config_refresh () {
       printerr "O tempo ocioso deve ser ser digitado em segundos, de 6 a 60 segundos"
     else
       SRV_DELAY=$delay
-    fi
-
-    local never_stop
-    never_stop=$(config_bool_get charging-never-stop)
-    if [ -z "$never_stop" ]; then
-      :
-    else
-      CHARGE_NEVER_STOP="$never_stop"
     fi
 
     user_configs

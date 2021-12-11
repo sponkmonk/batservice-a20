@@ -28,6 +28,8 @@ if [ -z "$NO_SERVICE" ]; then
   exec 2>&1
 fi
 
+[ -n "$NO_PERMS" ] && debug () { echo "# $@"; } || debug () { :; }
+
 
 # error $E_NOROOT
 if [ -n "$MODDIR" ]; then
