@@ -59,7 +59,7 @@ do_charge_stop () {
       ;;
   esac
 
-  if [ $_events_switch_set -eq $ENABLED ] || [ $percent -ge $CHARGE_STOP ]; then
+  if [ $_events_switch_set -eq $ENABLED -o $percent -ge $CHARGE_STOP ]; then
     battery_switch_set disable
     echo '#upd Carregamento parou'
     _events_switch_set=$ENABLED
@@ -108,8 +108,8 @@ on_discharge () {
   local r=$?
   [ $r -ne $EVENTS_OK ] && return $r
 
-  if [ $_events_switch_set -eq $ENABLED ]\
-      && [ $percent -lt $CHARGE_CONTINUE ]; then
+  if [ $_events_switch_set -eq $ENABLED -a \
+      $percent -lt $CHARGE_CONTINUE ]; then
     battery_switch_set enable
     _events_switch_set=$DISABLED
     return $EVENTS_NEXT

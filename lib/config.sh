@@ -130,9 +130,9 @@ config_refresh () {
     cont=$(config_number_get charge-continue)
     stop=$(config_number_get charge-stop)
 
-    if [ -z "$cont" ] || [ -z "$stop" ]; then
+    if [ -z "$cont" -o -z "$stop" ]; then
       :
-    elif [ $cont -lt 15 ] || [ $stop -le $cont ] || [ $stop -gt 100 ]; then
+    elif [ $cont -lt 15 -o $stop -le $cont -o $stop -gt 100 ]; then
       printerr "Arquivo de configuração mal definido!"
     else
       CHARGE_CONTINUE=$cont
@@ -143,7 +143,7 @@ config_refresh () {
     delay=$(config_number_get service-delay-not-charging)
     if [ -z "$delay" ]; then
       :
-    elif [ $delay -lt 6 ] || [ $delay -gt 60 ]; then
+    elif [ $delay -lt 6 -o $delay -gt 60 ]; then
       printerr "O tempo ocioso deve ser ser digitado em segundos, de 6 a 60 segundos"
     else
       SRV_DELAY=$delay
