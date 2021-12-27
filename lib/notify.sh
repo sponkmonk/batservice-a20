@@ -30,9 +30,32 @@ NO_PERMS=1
 . "$LIB/config.sh"
 
 
+# Isto deve corrigir o travamento causado pelo app Termux:API
+spawn_and_kill () {
+  local tl
+  # Em testes, termux-api não demorou mais que 7 segundos para responder quando ocioso
+  $@ &
+  tl=7
+  while [ $tl -gt 0 ]; do
+    sleep 1
+    tl=$(expr $tl - 1)
+    jobs %1 2>/dev/null
+    [ $? -ne 0 ] && break
+    [ $tl -eq 0 ] && kill %1 2>/dev/null
+  fi
+}
+
+send_toast () {
+  echo "ALERTA: $1"
+  [ -z "$TERMUX_API" ] && return 0
+  spawn_and_kill termux-toast "BatService: $1"
+}
+
 send_message () {
-  if [ -z "$TERMUX_API" ]; then return 0; fi
-  termux-toast "BatService: $1"
+  echo "MENSAGEM: $1"
+  [ -z "$TERMUX_API" ] && return 0
+  spawn_and_kill termux-notification -i batservice-msg \
+    --icon "battery_std" -t "Mensagem do BatService" -c "$1"
 }
 
 send_status () {
@@ -46,7 +69,7 @@ send_status () {
   if [ -z "$TERMUX_API" ]; then
     [ -n "$NO_LOGS" ] && echo "STATUS: $1"
   else
-    termux-notification -i batservice --ongoing --alert-once\
+    spawn_and_kill termux-notification -i batservice --ongoing --alert-once\
       --icon "battery_std" -t "Status do serviço" -c "$1"\
       --button1 "$btn" --button1-action "DATA_FIX=\"$DATA\" LIB_FIX=\"$LIB\" sh $LIB/notify.sh force-charge"\
       --button2 "X" --button2-action "DATA_FIX=\"$DATA\" LIB_FIX=\"$LIB\" sh $LIB/notify.sh quit"
@@ -89,7 +112,7 @@ if [ -n "$1" ]; then
   else case "$1" in
     quit)
       echo 0 > "$EXIT_FILE"
-      send_message "O serviço será encerrado"
+      send_toast "O serviço será encerrado"
       ;;
 
     force-charge)
@@ -107,14 +130,14 @@ if [ -n "$1" ]; then
       esac
 
       if [ "$val" = "true" ]; then
-        send_message "A bateria carregará completamente"
+        send_toast "A bateria carregará completamente"
       else
-        send_message "A bateria NÃO carregará completamente"
+        send_toast "A bateria NÃO carregará completamente"
       fi
       ;;
 
     *)
-      send_message "Comando inválido!"
+      send_toast "Comando inválido!"
       echo "ERR: comando inválido!"
       exit 1
       ;;
@@ -139,12 +162,15 @@ while [ 0 ]; do
   do_print=1
   echo "$stdin" | grep -E '^#' >/dev/null
   if [ $? -eq 0 ]; then
-    msg=$(echo "$stdin" | sed -E 's|#upd (.+)|\1|g' | grep -v '#')
-    if [ -n "$msg" ]; then
-      send_message "$msg"
-      echo "ALERTA: $msg"
+    local upd
+    upd=$(echo "$stdin" | sed -E 's|#upd (.+)|\1|g' | grep -v '#')
+    if [ -n "$upd" ]; then
+      send_toast "$upd"
+    else
+      local msg
+      msg=$(echo "$stdin" | sed -E 's|#msg (.+)|\1|g' | grep -v '#')
+      [ -n "$msg" ] && send_message "$msg"
     fi
-    unset msg
     do_print=0
   fi
 
