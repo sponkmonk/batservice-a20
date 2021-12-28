@@ -61,7 +61,7 @@ do_charge_stop () {
 
   if [ $_events_switch_set -eq $ENABLED -o $percent -ge $CHARGE_STOP ]; then
     battery_switch_set disable
-    echo '#upd Carregamento parou'
+    echo '#upd carregamento parou'
     _events_switch_set=$ENABLED
     return $EVENTS_NEXT
   fi

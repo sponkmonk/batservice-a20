@@ -1,0 +1,3 @@
+service-delay-not-charging 60
+charge-stop 70
+charge-continue 65
