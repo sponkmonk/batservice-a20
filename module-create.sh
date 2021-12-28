@@ -19,7 +19,7 @@
 #    along with BatService.  If not, see <https://www.gnu.org/licenses/>.
 
 NAME=BatService-A20
-VERSION=v2.1.211215
+VERSION=v2.2.211227
 
 echo "Criando pacote Magisk..."
 

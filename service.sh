@@ -1,6 +1,6 @@
 #!/bin/sh
 
-#    BatService v2.1 - battery conservation mode for Galaxy A20
+#    BatService - battery conservation mode for Galaxy A20
 #
 #    Copyright (C) 2021 Cledson Ferreira
 #

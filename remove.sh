@@ -62,7 +62,7 @@ read sel
 if [ "$sel" = "y" ] || [ "$sel" = "Y" ]; then
   rm $PREFIX/etc/batservice/config.txt
   rm $PREFIX/etc/batservice/user-configs.sh
-  rm $PREFIX/etc/batservice/user-jobs.sh
+  rm $PREFIX/etc/batservice/user-events.sh
   rmdir $PREFIX/etc/batservice
   rm $HOME/.cache/BatService/out.log
   rmdir $HOME/.cache/BatService
@@ -70,6 +70,8 @@ else
   echo "Você pode remover manualmente um dos seguintes arquivos:"
   echo "CONFIG: $PREFIX/etc/batservice/config.txt"
   echo "CACHE: $HOME/.cache/BatService/out.log"
+  echo "EVENTS: $PREFIX/etc/batservice/user-events.sh"
+  echo "CONFIGS: $PREFIX/etc/batservice/user-configs.sh"
 fi
 
 echo "Terminado!"
