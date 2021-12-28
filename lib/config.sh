@@ -53,8 +53,12 @@ config_number_set () {
 
 config_bool_get () {
   if [ -r "$CONFIG_FILE" ]; then
-    grep -E "^ *$1 true *$" "$CONFIG_FILE" >/dev/null && echo true || echo false
-    return 0
+    local val
+    val=$(grep -E "^ *$1 (true|false) *$" "$CONFIG_FILE")
+    if [ -n "$val" ]; then
+      echo "$val" | grep -Eo "(true|false)"
+      return 0
+    fi
   fi
   return 1
 }
