@@ -42,7 +42,7 @@ spawn_and_kill () {
     jobs %1 2>/dev/null
     [ $? -ne 0 ] && break
     [ $tl -eq 0 ] && kill %1 2>/dev/null
-  fi
+  done
 }
 
 send_toast () {
