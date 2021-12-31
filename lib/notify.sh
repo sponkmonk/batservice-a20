@@ -34,7 +34,7 @@ NO_PERMS=1
 spawn_and_kill () {
   local tl
   # Em testes, termux-api não demorou mais que 7 segundos para responder quando ocioso
-  $@ &
+  "$@" &
   tl=7
   while [ $tl -gt 0 ]; do
     sleep 1
@@ -162,12 +162,10 @@ while [ 0 ]; do
   do_print=1
   echo "$stdin" | grep -E '^#' >/dev/null
   if [ $? -eq 0 ]; then
-    local upd
     upd=$(echo "$stdin" | sed -E 's|#upd (.+)|\1|g' | grep -v '#')
     if [ -n "$upd" ]; then
       send_toast "$upd"
     else
-      local msg
       msg=$(echo "$stdin" | sed -E 's|#msg (.+)|\1|g' | grep -v '#')
       [ -n "$msg" ] && send_message "$msg"
     fi
