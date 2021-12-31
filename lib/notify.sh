@@ -37,12 +37,12 @@ spawn_and_kill () {
   "$@" &
   tl=7
   while [ $tl -gt 0 ]; do
-    sleep 1
     tl=$(expr $tl - 1)
-    jobs %1 2>/dev/null
+    jobs %1 >/dev/null 2>&1
     [ $? -ne 0 ] && break
-    [ $tl -eq 0 ] && kill %1 2>/dev/null
+    sleep 1
   done
+  # Ignorando propositalmente até encontrar outra solução
 }
 
 send_toast () {
