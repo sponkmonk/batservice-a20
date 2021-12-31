@@ -18,8 +18,7 @@
 #    You should have received a copy of the GNU General Public License
 #    along with BatService.  If not, see <https://www.gnu.org/licenses/>.
 
-NAME=BatService-A20
-VERSION=v2.2.211227
+. lib/consts.sh
 
 echo "Criando pacote Magisk..."
 
