@@ -39,7 +39,7 @@ B_SWITCH_DEFAULT=$(cat "$SYSFS_SWITCH")
 # } A20
 
 
-DELAY_SWITCH=10
+DELAY_SWITCH=12
 
 _NOT_CHARGING_MIN_MA=-10
 _NOT_CHARGING_MAX_MA=10
@@ -93,7 +93,7 @@ battery_switch_set () {
       battery_status
       if [ "$status" = "Charging" ]; then
         echo $B_SWITCH_DEFAULT > "$SYSFS_SWITCH"
-        printerr "Controlador de carga INVÁLIDO!"
+        printerr "O controlador de carga não funcionou!"
         error $E_WRSWITCH
       fi
     fi
