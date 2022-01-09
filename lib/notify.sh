@@ -48,14 +48,14 @@ spawn_and_kill () {
 send_toast () {
   echo "ALERTA: $1"
   [ -z "$TERMUX_API" ] && return 0
-  spawn_and_kill termux-toast "BatService: $1"
+  spawn_and_kill termux-toast "$NAME: $1"
 }
 
 send_message () {
   echo "MENSAGEM: $1"
   [ -z "$TERMUX_API" ] && return 0
   spawn_and_kill termux-notification -i batservice-msg \
-    --icon "battery_std" -t "Mensagem do BatService" -c "$1"
+    --icon "battery_std" -t "Mensagem do $NAME" -c "$1"
 }
 
 send_status () {
