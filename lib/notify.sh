@@ -146,7 +146,11 @@ if [ -n "$1" ]; then
 fi
 
 
-[ -z "$NO_LOGS" ] && log_start
+if [ -z "$NO_LOGS" ]; then
+  log_start
+elif [ -n "$BTDROID" ]; then
+  exec> /dev/null
+fi
 
 while [ "$stdin" != "==============================" ]; do
   read stdin || exit 0
