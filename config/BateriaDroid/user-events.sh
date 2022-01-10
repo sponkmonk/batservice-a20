@@ -46,6 +46,7 @@ charge_empty_action () {
     config_number_set charge-empty $D
     echo '#upd a bateria foi calibrada para o serviço'
     echo "#msg Capacidade da bateria: $Tf mAh"
+    u_battery_is_weak=1
     return $EVENTS_OK
   fi
 
