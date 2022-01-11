@@ -22,7 +22,6 @@ if [ -z "$NO_PERMS" ]; then
   if [ -f "${0%/*}/lib/magisk-env.rc" ]; then
     MODDIR="${0%/*}"
     . "$MODDIR/lib/magisk-env.rc"
-    NO_PERMS=1
 
   # Termux
   else

@@ -2,3 +2,4 @@ BWD="/sys/class/power_supply/battery"
 LIB="$MODDIR/lib"
 DATA="$MODDIR/data"
 CACHE="$MODDIR/log"
+NO_PERMS=1
