@@ -1,4 +1,4 @@
-#!/system/bin/sh
+#!/bin/sh
 
 #    module-create.sh - this script generates a BatService module package
 #    for Magisk.

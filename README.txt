@@ -1,10 +1,8 @@
 BATSERVICE PARA O GALAXY A20
 
-Este é um simples módulo Magisk¹ para o Galaxy A20, que conserva a bateria entre 45 e 50 %, o que possibilita usar um "power bank" como se este fosse a própria bateria do dispositivo, prolongando bastante a vida útil da bateria interna do dispositivo.
+Isto é um software para o Galaxy A20, que conserva a bateria entre 45 e 50 %, o que possibilita usar um "power bank" como se este fosse a própria bateria do dispositivo, prolongando bastante a vida útil da bateria interna do dispositivo.
 
-Isto funciona com praticamente todo carregador capaz de entregar a potência necessária para usar o Galaxy A20, isto é, qualquer fonte com potência igual ou maior que 5 W.
-
-NOTE: se você não sabe usar shell, instale a versão do Magisk!
+Instalável via Termux ou Magisk¹, funciona com praticamente todo carregador capaz de entregar a potência necessária para usar o Galaxy A20, isto é, qualquer fonte com potência superior a 5 W.
 
 
 0. ANULAÇÃO DE GARANTIAS
