@@ -15,7 +15,7 @@
 #    along with BatService.  If not, see <https://www.gnu.org/licenses/>.
 
 
-U_PERCENT_WEAK=15
+U_PERCENT_WEAK=20
 
 # 3,7 V => 14 %
 U_VOLTAGE_FOR_14PERC=3700
