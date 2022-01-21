@@ -47,7 +47,7 @@ charge_empty_action () {
     echo '#upd a bateria foi calibrada para o serviço'
     echo "#msg Capacidade da bateria: $Tf mAh"
     u_battery_is_weak=1
-    return $EVENTS_OK
+    return $EVENTS_NEXT
   fi
 
   if [ -z "$u_battery_is_weak" -a $percent -lt $U_PERCENT_WEAK ]; then
@@ -61,5 +61,5 @@ charge_empty_action () {
 
 user_on_discharge () {
   charge_empty_action
-  return $EVENTS_OK
+  return $?
 }
