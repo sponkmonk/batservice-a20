@@ -24,6 +24,7 @@ if [ -n "$DATA_FIX" ]; then
 fi
 
 NO_PERMS=1
+. "$LIB/consts.sh"
 . "$LIB/perms.sh"
 . "$LIB/log.sh"
 . "$LIB/error.sh"
