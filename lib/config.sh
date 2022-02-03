@@ -37,7 +37,7 @@ config_number_get () {
 config_number_set () {
   config_valid_param $1
   local inval=$(echo $2 | grep -Ev '^[[:digit:]]+$')
-  if [ -n "$inval" ]; then
+  if [ -z "$2" -o -n "$inval" ]; then
     printerr "config_number_set: o valor deve ser um número; recebeu: $2"
     error $E_INVPARAM
   fi
@@ -66,7 +66,7 @@ config_bool_get () {
 config_bool_set () {
   config_valid_param $1
   local inval=$(echo $2 | grep -Ev '^(true|false)$')
-  if [ -n "$inval" ]; then
+  if [ -z "$2" -o -n "$inval" ]; then
     printerr "config_number_set: o valor deve ser um booleano (true|false); recebeu: $2"
     error $E_INVPARAM
   fi
@@ -90,6 +90,10 @@ config_string_get () {
 # Strings multilinha não são suportadas
 config_string_set () {
   config_valid_param $1
+  if [ -z "$2" ]; then
+    printerr "config_string_set: a string não pode ser vazia!"
+    error $E_INVPARAM
+  fi
 
   local val="$(config_string_get $1)"
   if [ -z "$val" ]; then

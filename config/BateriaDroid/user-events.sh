@@ -38,6 +38,8 @@ user_events_pre () {
 # Verificar se a bateria está fraca/vazia e propagar isto caso necessário
 charge_empty_action () {
   if [ $voltage -lt $U_VOLTAGE_FOR_14PERC -a $percent -ge $U_PERCENT_ERR_MAX ]; then
+    battery_charge_now
+    battery_charge_full
     local Pi=$charge_now
     local Ti=$charge_full
     local D=$(expr '(' 100 '*' $Pi -  14 '*' $Ti ')' / 86)
