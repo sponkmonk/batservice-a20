@@ -21,6 +21,7 @@ NO_SERVICE=1
 if [ -n "$DATA_FIX" ]; then
   DATA="$DATA_FIX"
   LIB="$LIB_FIX"
+  CACHE="$CACHE_FIX"
 fi
 
 NO_PERMS=1
@@ -70,10 +71,12 @@ send_status () {
   if [ -z "$TERMUX_API" ]; then
     [ -n "$NO_LOGS" ] && echo "STATUS: $1"
   else
+    local API_FIX="DATA_FIX=$DATA LIB_FIX=$LIB CACHE_FIX=$CACHE"
     spawn_and_kill termux-notification -i batservice --ongoing --alert-once\
       --icon "battery_std" -t "Status do serviço" -c "$1"\
-      --button1 "$btn" --button1-action "DATA_FIX=\"$DATA\" LIB_FIX=\"$LIB\" sh $LIB/notify.sh force-charge"\
-      --button2 "X" --button2-action "DATA_FIX=\"$DATA\" LIB_FIX=\"$LIB\" sh $LIB/notify.sh quit"
+      --button1 "$btn" --button1-action "$API_FIX sh $LIB/notify.sh force-charge"\
+      --button2 "↻" --button2-action "$API_FIX sh $LIB/notify.sh restart"\
+      --button3 "X" --button3-action "$API_FIX sh $LIB/notify.sh quit"
   fi
 }
 
@@ -110,10 +113,23 @@ if [ -n "$1" ]; then
 
   if [ "$1" = "--no-logs" ]; then
     NO_LOGS=1
+
   else case "$1" in
     quit)
       echo 0 > "$EXIT_FILE"
       send_toast "O serviço será encerrado"
+      ;;
+
+    restart)
+      echo 0 > "$EXIT_FILE"
+      send_toast "O serviço será reiniciado"
+      [ -n "$TERMUX_API" ] && termux-notification-remove batservice
+      tl=60
+      while [ $tl -gt 0 -a -f "$EXIT_FILE" ]; do
+        sleep 1
+        tl=$(expr $tl - 1)
+      done
+      $HOME/.termux/boot/batservice-termux.sh
       ;;
 
     force-charge)
