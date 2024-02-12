@@ -1,80 +1,80 @@
-BATSERVICE PARA O GALAXY A20
+BATSERVICE FOR OR GALAXY A20
 
-Isto é um software para o Galaxy A20, que conserva a bateria entre 45 e 50 %, o que possibilita usar um "power bank" como se este fosse a própria bateria do dispositivo, prolongando bastante a vida útil da bateria interna do dispositivo.
+This is a software for the Galaxy A20, which conserves the battery between 45 and 50%, or which makes it possible to use a "power bank" such as this plug into the device's own battery, significantly prolonging the useful life of the device's internal battery.
 
-Instalável via Termux ou Magisk¹, funciona com praticamente todo carregador capaz de entregar a potência necessária para usar o Galaxy A20, isto é, qualquer fonte com potência superior a 5 W.
-
-
-0. ANULAÇÃO DE GARANTIAS
-
-Este programa vem com ABSOLUTAMENTE NENHUMA GARANTIA.
-Este é um software livre, e você pode redistribuí-lo sob certas condições; leia o arquivo COPYING para detalhes.
-
-Testei apenas no modelo referido. Se o kernel do seu Android não possuir o arquivo de controle de carga específico (veja a variável "Bswitch" no código fonte deste programa), ou o seu dispositivo não está rooteado, o BatService não funcionará.
+Installed via Termux or Magisk¹, it works with practically any charger capable of delivering the power necessary to use the Galaxy A20, that is, any source with power greater than 5 W.
 
 
-1. INSTALANDO
+0. CANCELLATION OF WARRANTIES
+
+This program comes with ABSOLUTELY NENHUMA GUARANTEE.
+This is free software, and you can redistribute it under certain conditions; Read the COPYING file for details.
+
+I tested just no model referred to. If your Android kernel does not have a specific load control file (see the "Bswitch" variable in the source code of this program), or your device is not rooted, or BatService will not work.
+
+
+1. INSTALLING
 
   (a) Termux
 
-Com o Termux instalado via F-Droid, e com a permissão de "Memória", abra-o e mova este pacote para ele. Pode ser necessário instalar o comando 'unzip' antes de extrair o pacote. Para isto:
+With Termux installed via F-Droid, and with "Memory" permission, open and move this package to it. It may be necessary to install the 'unzip' command before extracting the package. For this:
     $ apt install unzip -y
 
-Exemplo:
+Example:
     $ mkdir tmp && cd tmp
     $ mv /sdcard/Download/BatService-A20-Termux-v2.*.zip ./
     $ unzip BatService-A20-Termux-v2.*.zip
     $ chmod +x install.sh && ./install.sh
-    $ su -c "echo Ok" # Faça que o seu gerenciador de root LEMBRE desta permissão
+    $ su -c "echo Ok" # Make your root manager LEMBER of this permission
 
-É necessário instalar e executar o app Termux:Boot ao menos uma vez.
+You need to install and run the Termux:Boot app at least once.
 
-Existe um script de desinstalação no pacote, portanto não recomendo apagar.
+There is an unpackaged uninstall script, therefore I do not recommend turning it off.
 
 
   (b) Magisk
 
-Use o script "module-create.sh" para criar o pacote de instalação do Magisk. Após isso, basta instalar o pacote zip.
+Use the script "module-create.sh" to create the Magisk installation package. That's it, just install the zip package.
 
 
-2. COMO ENCERRAR O SERVIÇO (PARA DESENVOLVEDORES)
+2. HOW TO ENCLOSURE OR SERVICE (FOR UNWRAPPERS)
 
-O serviço pode ser encerrado criando um arquivo nomeado "exit.err" no diretório <módulo>/data.
+The service can be locked by creating a file named "exit.err" in the <module>/data directory.
 
-O mais recomendado é simplesmente desativar o módulo no Magisk e reiniciar o Android.
-
-
-3. NOTIFICAÇÕES
-
-O BatService suporta notificações através da API do Termux. Basta instalar esta extensão seguindo o guia oficial. Como deve imaginar: use a versão de Termux:API do F-Droid! em seguida, instale o pacote necessário.
-
-Acesse a wiki³ para detalhes.
+Or it is recommended to simply disable the Magisk module and restart Android.
 
 
-4. CONFIGURAÇÕES
+3. NOTIFICATIONS
 
-O formato do arquivo de configuração a ser salvo em "$PREFIX/etc/batservice/config.txt" é simples como este exemplo:
+BatService supports notifications through the Termux API. Simply install this extension following the official guide. As you might imagine: use the Termux version: F-Droid API! Next, install the necessary package.
+
+Access wiki³ for details.
+
+
+4. SETTINGS
+
+The configuration file format to be saved in "$PREFIX/etc/batservice/config.txt" is simple like this example:
     charging-never-stop false
     charging-stop 50
     charging-continue 45
     service-delay-not-charging 60
 
-Nenhuma configuração é obrigatória*, mas o arquivo deve terminar com uma linha vazia se for manipulado manualmente.
+Configuration is not mandatory*, but the file must end with an empty line if it has been handled manually.
 
-Existem restrições para os valores suportados:
-    cn: charging-never-stop       | true, false
-    cc: charging-continue         | 15 <= cc < cs
-    cs: charging-stop             | cc < cs <= 100
-    sd: service-delay-not-charging| 6 <= sd <= 60
+There are restrictions for the supported values:
+    cn: charging-never-stop | true, false
+    cc:charging-continue | 15 <= cc < cs
+    cs: charging-stop | cc < cs <= 100
+    sd:service-delay-not-charging| 6 <= sd <= 60
 
-(*) cc depende de cs, portanto não é possível inserir apenas um!
+(*) cc depends on cs, therefore it is not possible to insert just um!
 
-NOTE: as abreviações (cc, cs etc.) são apenas para facilitar a leitura. O serviço não interpreta isso!
+NOTE: the abbreviations (cc, cs etc.) are only for ease of reading. The service does not interpret this!
 
 
-PROBLEMAS?
+ISSUES?
 
-Você deve entrar em contato comigo pela rede social Mastodon. Recebo muito spam no meu e-mail e possivelmente vou ignorar qualquer mensagem de estranhes que eu tenha recebido por lá.
+You should contact me on the Mastodon social network. I receive a lot of spam in my e-mail and may possibly ignore any foreign messages that you may have received.
 
 Mastodon: @cledson_cavalcanti@mastodon.technology
 
